@@ -3,6 +3,9 @@ package com.bugsquashers.backend.auth.filter;
 
 import com.bugsquashers.backend.auth.jwt.JwtService;
 import com.bugsquashers.backend.user.UserPrincipal;
+import com.bugsquashers.backend.util.response.ApiResponse;
+import com.bugsquashers.backend.util.response.ErrorStatus;
+import com.bugsquashers.backend.util.response.SuccessStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -52,31 +55,40 @@ public class BasicLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info(">> ID/PW 로그인 성공! UserID: {}, REQ IP: {}", authResult.getName(), request.getRemoteAddr());
-        //jwt 토큰 발행
-        String accessToken = jwtService.createAccessToken(response, (UserPrincipal) authResult.getPrincipal());
-        String refreshToken = jwtService.createRefreshToken(response, (UserPrincipal) authResult.getPrincipal());
+        //jwt 토큰 발행 (쿠키로 설정됨)
+        jwtService.createAccessToken(response, (UserPrincipal) authResult.getPrincipal());
+        jwtService.createRefreshToken(response, (UserPrincipal) authResult.getPrincipal());
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        Map<String, String> tokenResponse = new HashMap<>();
-        tokenResponse.put("message", "로그인 성공");
-        tokenResponse.put("access_token", accessToken);
-        tokenResponse.put("refresh_token", refreshToken);
+        response.setStatus(SuccessStatus.OK.getHttpStatus().value());
 
-        new ObjectMapper().writeValue(response.getWriter(), tokenResponse);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                true,
+                SuccessStatus.OK.getCode(),
+                SuccessStatus.OK.getMessage(),
+                null
+        );
+
+        new ObjectMapper().writeValue(response.getWriter(), apiResponse);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("로그인 실패: {}", failed.getMessage());
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        ErrorStatus errorStatus = ErrorStatus.UNAUTHORIZED;
+        response.setStatus(errorStatus.getHttpStatus().value());
         response.setContentType("application/json;charset=UTF-8");
 
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "인증 실패");
-        errorResponse.put("message", failed.getMessage());
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                false,
+                errorStatus.getCode(),
+                failed.getMessage(),
+                null
+        );
 
-        new ObjectMapper().writeValue(response.getWriter(), errorResponse);
+        new ObjectMapper().writeValue(response.getWriter(), apiResponse);
     }
 
     private record LoginRequest(

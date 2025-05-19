@@ -3,6 +3,10 @@ package com.bugsquashers.backend.auth.config;
 import com.bugsquashers.backend.auth.filter.BasicLoginFilter;
 import com.bugsquashers.backend.auth.filter.JwtAuthenticationFilter;
 import com.bugsquashers.backend.auth.jwt.JwtService;
+import com.bugsquashers.backend.util.response.ApiResponse;
+import com.bugsquashers.backend.util.response.SuccessStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,9 +58,20 @@ public class SecurityConfig {
                         .addLogoutHandler((request, response, authentication) -> {
                             jwtService.logout(request, response);
                         })
-                        .logoutSuccessUrl("/")
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            response.sendRedirect("/login?logout=self");
+                            SuccessStatus logoutSuccessStatus = SuccessStatus.LOGOUT_SUCCESS;
+                            response.setStatus(logoutSuccessStatus.getHttpStatus().value());
+                            response.setContentType("application/json;charset=UTF-8");
+
+                            ApiResponse<Void> apiResponse = new ApiResponse<>(
+                                    true,
+                                    logoutSuccessStatus.getCode(),
+                                    logoutSuccessStatus.getMessage(),
+                                    null
+                            );
+
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
                         })
                         .deleteCookies("remember-me", "access_token", "refresh_token")
                 )

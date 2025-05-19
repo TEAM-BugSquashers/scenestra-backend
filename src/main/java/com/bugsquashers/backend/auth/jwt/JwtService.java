@@ -10,6 +10,9 @@ import com.bugsquashers.backend.user.repository.RefreshTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,12 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.AuthenticationException;
 
 import javax.crypto.SecretKey;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.bugsquashers.backend.auth.jwt.JwtRule.*;
 
@@ -125,10 +133,38 @@ public class JwtService {
         return userService.getUserByUsername(getUsernameFromRefreshToken(token));
     }
 
-    /// TODO: 매 요청시마다 db요청 부하 발생. jwt토큰에 포함된 정보만으로 principal을 생성하는 방식 검토
     public Authentication getAuthentication(String token) {
-        UserDetails principal = customUserDetailsService.loadUserByUsername(getUsernameFromAccessToken(token));
-        return new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        try {
+            // 토큰에서 클레임 정보 추출
+            var claims = Jwts.parser().verifyWith(jwtGenerator.getAccessKey()).build()
+                    .parseSignedClaims(token).getPayload();
+            
+            String username = claims.getSubject();
+            Long userId = claims.get("Identifier", Long.class);
+            Boolean isAdmin = claims.get("isAdmin", Boolean.class);
+            
+            // 토큰 정보만으로 UserPrincipal 생성
+            UserPrincipal principal = new UserPrincipal(userId, username);
+            
+            // isAdmin 값에 따라 권한 설정
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            
+            if (isAdmin != null && isAdmin) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }
+            
+            return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+        } catch (ExpiredJwtException e) {
+            log.error("만료된 JWT 토큰입니다: {}", e.getMessage());
+            throw e;
+        } catch (JwtException e) {
+            log.error("JWT 토큰 처리 중 오류 발생: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("인증 처리 중 예상치 못한 오류 발생: {}", e.getMessage());
+            throw new AuthenticationException("인증 처리 중 오류가 발생했습니다", e) {};
+        }
     }
 
     public String resolveTokenFromCookie(HttpServletRequest request, JwtRule tokenPrefix) {
