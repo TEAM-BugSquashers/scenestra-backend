@@ -1,5 +1,6 @@
 package com.bugsquashers.backend.movie.domain;
 
+import com.bugsquashers.backend.user.domain.UserGenre;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,4 +29,12 @@ public class Genre {
             orphanRemoval = true
     )
     private List<MovieGenre> movieGenres = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "genre",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    private List<UserGenre> userGenres = new ArrayList<>();
 }
