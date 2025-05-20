@@ -26,6 +26,8 @@ public class Movie {
 
     private Date openDate;
 
+    private Integer numAudience;
+
     private String posterUrl;
 
     @OneToMany(
