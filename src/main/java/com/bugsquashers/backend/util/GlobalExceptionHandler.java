@@ -2,6 +2,7 @@ package com.bugsquashers.backend.util;
 
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.ErrorStatus;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpHeaders;
@@ -47,6 +48,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return ApiResponse.onErrorForOverride(ErrorStatus.BAD_REQUEST, "JSON 형식이 올바르지 않습니다.");
+    }
+
+    @ExceptionHandler(UnrecognizedPropertyException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUnrecognizedPropertyException(UnrecognizedPropertyException ex) {
+        return ApiResponse.onError(ErrorStatus.BAD_REQUEST, "JSON 필드명이 잘못되었습니다.");
     }
     
     @ExceptionHandler(ExpiredJwtException.class)
