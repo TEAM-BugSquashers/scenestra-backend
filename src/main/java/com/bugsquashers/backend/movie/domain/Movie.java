@@ -26,6 +26,7 @@ public class Movie {
 
     private Date openDate;
 
+    @Column(columnDefinition = "TEXT")
     private String posterUrl;
 
     @OneToMany(
