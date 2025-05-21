@@ -2,6 +2,7 @@ package com.bugsquashers.backend.movie.service;
 
 import com.bugsquashers.backend.movie.domain.Genre;
 import com.bugsquashers.backend.movie.domain.Movie;
+import com.bugsquashers.backend.movie.domain.MovieGenre;
 import com.bugsquashers.backend.movie.dto.GenreResponse;
 import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.movie.repository.MovieRepository;
@@ -17,16 +18,24 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
 
-
+    // 전체 영화 찾기
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
     }
 
-    // GenreService.java (또는 해당 로직이 있는 서비스)
+    // 전체 장르 목록 출력
     public List<GenreResponse> getAllGenres() {
         List<Genre> genres = genreRepository.findAll(); // 또는 N+1 방지된 쿼리 사용
         return genres.stream()
                 .map(genre -> new GenreResponse(genre.getGenreId(), genre.getName(), genre.getVideoUrl()))
                 .collect(Collectors.toList());
     }
+
+    // 장르별 영화 찾기
+    public List<Movie> getMoviesByGenreId(Integer genreId) {
+        return movieRepository.findMoviesByGenreId(genreId);
+    }
+
+
+
 }
