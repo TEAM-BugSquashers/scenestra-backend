@@ -38,11 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         boolean isApiRequest = requestURI.startsWith("/api");
-        boolean isExceptionallyChecked = requestURI.equals("/vote");
         boolean isExcluded = EXCLUDED_URLS.contains(requestURI);
 
         // "/api/**" 하위라도 제외 리스트(EXCLUDED_URLS)에 포함되면 필터 패스
-        if ((isApiRequest && isExcluded) || (!isApiRequest && !isExceptionallyChecked)) {
+        // API 요청이 아니어도 필터 패스
+        if (!isApiRequest || isExcluded) {
             log.debug("[JWT Filter] 예외 URL({}) 요청이므로 필터 패스", requestURI);
             filterChain.doFilter(request, response);
             return;
