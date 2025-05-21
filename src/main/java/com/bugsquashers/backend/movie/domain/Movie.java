@@ -28,6 +28,7 @@ public class Movie {
 
     private Integer numAudience;
 
+    @Column(columnDefinition = "TEXT")
     private String posterUrl;
 
     @OneToMany(
