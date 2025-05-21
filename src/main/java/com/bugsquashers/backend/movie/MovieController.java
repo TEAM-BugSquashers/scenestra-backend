@@ -1,6 +1,5 @@
 package com.bugsquashers.backend.movie;
 
-import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;

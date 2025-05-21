@@ -1,7 +1,6 @@
 package com.bugsquashers.backend.movie.repository;
 
 import com.bugsquashers.backend.movie.domain.Movie;
-import com.bugsquashers.backend.movie.domain.MovieGenre;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
