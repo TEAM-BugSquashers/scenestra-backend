@@ -47,6 +47,7 @@ public class User {
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
+    @Builder.Default
     private List<UserGenre> userGenres = new ArrayList<>();
 
     public void addGenre(Genre genre) {

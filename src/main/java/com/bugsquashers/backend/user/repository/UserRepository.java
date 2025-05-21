@@ -1,8 +1,11 @@
 package com.bugsquashers.backend.user.repository;
 
 import com.bugsquashers.backend.user.domain.User;
+import com.bugsquashers.backend.user.dto.UserPreferredGenreResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -11,4 +14,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
+
+    @Query("select new com.bugsquashers.backend.user.dto.UserPreferredGenreResponse(g.genreId, g.name)" +
+            "from User u join u.userGenres ug join ug.genre g " +
+            "where u.userId = :userId"
+    )
+    List<UserPreferredGenreResponse> findPreferredGenresByUserId(Long userId);
 }

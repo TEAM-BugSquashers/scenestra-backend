@@ -3,6 +3,10 @@ package com.bugsquashers.backend.movie.repository;
 import com.bugsquashers.backend.movie.domain.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface GenreRepository extends JpaRepository<Genre, Integer> {
+import java.util.List;
+import java.util.Optional;
 
+public interface GenreRepository extends JpaRepository<Genre, String> {
+
+    Optional<Genre> findByGenreId(Integer id);
 }

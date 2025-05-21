@@ -2,8 +2,10 @@ package com.bugsquashers.backend.util;
 
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.ErrorStatus;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +42,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ApiResponse.onErrorForOverride(ErrorStatus.BAD_REQUEST, errors);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleConstraintViolationException(ConstraintViolationException ex) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getConstraintViolations().forEach((violation) -> {
+//            String fieldName = violation.getPropertyPath().toString();
+//            String errorMessage = violation.getMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+        return ApiResponse.onError(ErrorStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ApiResponse.onError(ErrorStatus.BAD_REQUEST, ex.getMessage());
@@ -47,6 +61,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return ApiResponse.onErrorForOverride(ErrorStatus.BAD_REQUEST, "JSON 형식이 올바르지 않습니다.");
+    }
+
+    @ExceptionHandler(UnrecognizedPropertyException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUnrecognizedPropertyException(UnrecognizedPropertyException ex) {
+        return ApiResponse.onError(ErrorStatus.BAD_REQUEST, "JSON 필드명이 잘못되었습니다.");
     }
     
     @ExceptionHandler(ExpiredJwtException.class)
