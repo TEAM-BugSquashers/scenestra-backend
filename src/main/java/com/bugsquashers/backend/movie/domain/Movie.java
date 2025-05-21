@@ -1,11 +1,11 @@
 package com.bugsquashers.backend.movie.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties("movieGenres")
 public class Movie {
     @Id
     private String movieId;
@@ -25,7 +26,8 @@ public class Movie {
 
     private String director;
 
-    private LocalDateTime openDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date openDate;
 
     private Integer numAudience;
 
