@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @AllArgsConstructor
@@ -16,7 +15,7 @@ public class MovieDto {
     private String title;
     private Integer showTime;
     private String director;
-    private Date openDate;
+    private LocalDateTime openDate;
     private Integer numAudience;
     private String posterUrl;
 

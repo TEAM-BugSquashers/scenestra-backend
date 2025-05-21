@@ -19,29 +19,38 @@ import java.util.List;
 public class MovieController {
     private final MovieService movieService;
 
-
+    // 전체 영화
     @GetMapping("/movie")
     public ResponseEntity<ApiResponse<Object>> allMovies() {
         //리턴값 SuccessStatus.OK 뒤에 , 넣고 넣어주기
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMovies());
     }
 
+    // 장르 목록
     @GetMapping("/genre")
     public ResponseEntity<ApiResponse<Object>> allGenres() {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllGenres());
     }
 
+    // 장르별 영화 찾기(전체)
     @GetMapping("/genre/movie")
     public ResponseEntity<ApiResponse<Object>> allMoviesByGenre() {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMoviesGroupedByGenre());
     }
 
-    // 추가: 장르 이름으로 영화 조회
+    // 장르 이름으로 영화 조회
     /** /api/genre/{name}/movie → MovieDto 리스트로 내려줌 */
     @GetMapping("/genre/{name}/movie")
     public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable String name) {
         List<MovieDto> dtos = movieService.getMoviesByGenreNameDto(name);
         return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
+    }
+
+    // New
+    @GetMapping("/movie/new")
+    public ResponseEntity<ApiResponse<Object>> newestMovies() {
+        List<?> payload = movieService.getLatestMoviesDto();
+        return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 
 }

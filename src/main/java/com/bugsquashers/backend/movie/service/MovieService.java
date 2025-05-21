@@ -55,4 +55,13 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
+    // NEW
+    public List<MovieDto> getLatestMoviesDto() {
+        return movieRepository
+                .findAllByOrderByOpenDateDesc()      // openDate DESC
+                .stream()
+                .map(MovieDto::new)                  // Movie → MovieDto
+                .collect(Collectors.toList());
+    }
+
 }

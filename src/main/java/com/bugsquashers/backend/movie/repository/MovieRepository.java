@@ -26,6 +26,8 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     )
     List<Movie> findAllByGenreName(@Param("genreName") String genreName);
 
+    // NEW
+    List<Movie> findAllByOrderByOpenDateDesc();
 
 
 
