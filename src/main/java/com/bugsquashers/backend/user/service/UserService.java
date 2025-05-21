@@ -1,19 +1,27 @@
 package com.bugsquashers.backend.user.service;
 
+import com.bugsquashers.backend.movie.domain.Genre;
+import com.bugsquashers.backend.movie.repository.GenreRepository;
+import com.bugsquashers.backend.movie.repository.MovieRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.dto.UserJoinRequest;
 import com.bugsquashers.backend.user.dto.UserJoinResponse;
+import com.bugsquashers.backend.user.dto.UserPreferredGenreResponse;
 import com.bugsquashers.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GenreRepository genreRepository;
 
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
@@ -23,6 +31,7 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
     }
 
+    @Transactional
     public UserJoinResponse userJoin(UserJoinRequest reqDto) {
         validateDuplicateUsername(reqDto.getUsername());
         validateDuplicateEmail(reqDto.getEmail());
@@ -36,6 +45,14 @@ public class UserService {
                 .enabled(true)
                 .isAdmin(false)
                 .build();
+
+        if (reqDto.getGenres() != null && !reqDto.getGenres().isEmpty()) {
+            reqDto.getGenres().forEach(genreId -> {
+                Genre genre = genreRepository.findByGenreId(genreId).orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 장르를 찾을 수 없습니다: " + genreId));
+                System.out.println("장르: " + genre.getName());
+                user.addGenre(genre);
+            });
+        }
 
         userRepository.save(user);
 
@@ -52,5 +69,9 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
         }
+    }
+
+    public List<UserPreferredGenreResponse> userPreferredGenres(Long userId) {
+        return userRepository.findPreferredGenresByUserId(userId);
     }
 }

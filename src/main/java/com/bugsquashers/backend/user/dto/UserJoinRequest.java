@@ -1,13 +1,13 @@
 package com.bugsquashers.backend.user.dto;
 
+import com.bugsquashers.backend.movie.domain.Genre;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -37,4 +37,9 @@ public class UserJoinRequest {
     @NotBlank(message = "실명은 필수입니다")
     @Size(min = 2, max = 30, message = "실명은 2자 이상 30자 이하여야 합니다")
     private String realName;
+
+    @NotEmpty(message = "선호 장르를 지정해야합니다.")
+    @Size(min = 3, max = 3, message = "선호 장르는 3개를 선택해야 합니다.")
+    @Schema(description = "선호하는 장르 ID 목록", example = "[1, 2, 3]")
+    private List<Integer> genres;
 }
