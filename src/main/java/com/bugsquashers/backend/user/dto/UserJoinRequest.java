@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Data
@@ -41,5 +42,5 @@ public class UserJoinRequest {
     @NotEmpty(message = "선호 장르를 지정해야합니다.")
     @Size(min = 3, max = 3, message = "선호 장르는 3개를 선택해야 합니다.")
     @Schema(description = "선호하는 장르 ID 목록", example = "[1, 2, 3]")
-    private List<Integer> genres;
+    private Set<Integer> genres;
 }
