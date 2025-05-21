@@ -4,6 +4,7 @@ package com.bugsquashers.backend.user;
 import com.bugsquashers.backend.user.domain.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
