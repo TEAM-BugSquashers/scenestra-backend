@@ -1,5 +1,6 @@
 package com.bugsquashers.backend.movie;
 
+import com.bugsquashers.backend.movie.dto.MovieDto;
 import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -28,9 +31,18 @@ public class MovieController {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllGenres());
     }
 
-    @GetMapping("/genres/{genreId}/movies")
-    public ResponseEntity<ApiResponse<Object>> moviesOfGenre(@PathVariable Integer genreId) {
-        return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getMoviesByGenreId(genreId));
+    @GetMapping("/genre/movie")
+    public ResponseEntity<ApiResponse<Object>> allMoviesByGenre() {
+        return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMoviesGroupedByGenre());
     }
+
+    // 추가: 장르 이름으로 영화 조회
+    /** /api/genre/{name}/movie → MovieDto 리스트로 내려줌 */
+    @GetMapping("/genre/{name}/movie")
+    public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable String name) {
+        List<MovieDto> dtos = movieService.getMoviesByGenreNameDto(name);
+        return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
+    }
+
 }
 
