@@ -26,6 +26,8 @@ public class Movie {
 
     private Date openDate;
 
+    private Integer numAudience;
+
     @Column(columnDefinition = "TEXT")
     private String posterUrl;
 
