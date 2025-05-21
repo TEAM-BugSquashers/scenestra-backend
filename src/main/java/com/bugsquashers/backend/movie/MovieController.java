@@ -53,5 +53,11 @@ public class MovieController {
         return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 
+    //Best
+    @GetMapping("/movie/best")
+    public ResponseEntity<ApiResponse<Object>> popularMovies() {
+        List<MovieDto> payload = movieService.getMostPopularMoviesDto();
+        return ApiResponse.onSuccess(SuccessStatus.OK, payload);
+    }
 }
 

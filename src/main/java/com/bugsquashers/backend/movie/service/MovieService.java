@@ -64,4 +64,11 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
+    // Best
+    public List<MovieDto> getMostPopularMoviesDto() {
+        return movieRepository.findAllByOrderByNumAudienceDesc()
+                .stream()
+                .map(MovieDto::new)
+                .collect(Collectors.toList());
+    }
 }

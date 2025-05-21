@@ -26,9 +26,9 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     )
     List<Movie> findAllByGenreName(@Param("genreName") String genreName);
 
-    // NEW
+    // 최신 영화(NEW)
     List<Movie> findAllByOrderByOpenDateDesc();
 
-
-
+    // 관객수 많은 순서(Best)
+    List<Movie> findAllByOrderByNumAudienceDesc();
 }
