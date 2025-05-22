@@ -6,13 +6,19 @@ import com.bugsquashers.backend.movie.dto.GenreMoviesDto;
 import com.bugsquashers.backend.movie.dto.GenreResponse;
 import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.movie.repository.MovieRepository;
+import com.bugsquashers.backend.user.domain.User;
+import com.bugsquashers.backend.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.bugsquashers.backend.movie.dto.MovieDto;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,10 +26,18 @@ import java.util.stream.Collectors;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
+    private final UserRepository userRepository;
 
     // 전체 영화 찾기
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
+    }
+
+    // 영화 상세 정보
+    public MovieDto getMovieById(String movieId) {
+        Movie m = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 영화를 찾지 못했습니다.: " + movieId));
+        return new MovieDto(m);
     }
 
     // 전체 장르 목록 출력
@@ -39,12 +53,13 @@ public class MovieService {
         return genreRepository.findAll().stream()
                 .map(g -> {
                     List<MovieDto> dtos = movieRepository.findAllByGenreId(g.getGenreId()).stream()
-                            .map(MovieDto::new)    // Movie → MovieDto 로 변환
+                            .map(MovieDto::new)
                             .collect(Collectors.toList());
                     return new GenreMoviesDto(
                             g.getGenreId(),
                             g.getName(),
                             g.getEngName(),
+                            g.getVideoUrl(),
                             dtos
                     );
                 })
@@ -73,6 +88,51 @@ public class MovieService {
     // Best
     public List<MovieDto> getMostPopularMoviesDto(int n) {
         return movieRepository.findAllByOrderByNumAudienceDesc(PageRequest.of(0, n))
+                .stream()
+                .map(MovieDto::new)
+                .collect(Collectors.toList());
+    }
+
+    // Recommend
+    public Map<String,Object> getRecommendations(Long userId, int n) {
+        // 선호 장르 ID 추출
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Integer> genreIds = user.getUserGenres().stream()
+                .map(ug -> ug.getGenre().getGenreId())
+                .collect(Collectors.toList());
+
+        // 장르별 영화 묶음 생성
+        List<GenreMoviesDto> byGenre = genreIds.stream()
+                .map(gid -> {
+                    Genre g = genreRepository.findById(gid)
+                            .orElseThrow(() -> new EntityNotFoundException("Genre not found: " + gid));
+                    List<MovieDto> dtos = getTopNByGenreId(gid, n);
+                    return new GenreMoviesDto(
+                            g.getGenreId(),
+                            g.getName(),
+                            g.getEngName(),
+                            g.getVideoUrl(),
+                            dtos
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // 최신 Top-n, 인기 Top-n
+        List<MovieDto> newTop  = getLatestMoviesDto(n);
+        List<MovieDto> bestTop = getMostPopularMoviesDto(n);
+
+        // Map에 담아서 한 번에 리턴
+        Map<String,Object> result = new LinkedHashMap<>();
+        result.put("genreMovies", byGenre);
+        result.put("newMovies",    newTop);
+        result.put("bestMovies",   bestTop);
+        return result;
+    }
+
+    // search
+    public List<MovieDto> searchByTitle(String keyword) {
+        return movieRepository.findByTitleContainingIgnoreCase(keyword)
                 .stream()
                 .map(MovieDto::new)
                 .collect(Collectors.toList());

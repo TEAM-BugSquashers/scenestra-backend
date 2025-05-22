@@ -28,6 +28,4 @@ public class MovieDto {
         this.numAudience= m.getNumAudience();
         this.posterUrl  = m.getPosterUrl();
     }
-
-    // getters only...
 }

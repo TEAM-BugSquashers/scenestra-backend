@@ -5,6 +5,7 @@ import com.bugsquashers.backend.util.response.ErrorStatus;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -86,5 +87,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoResourceFoundException(NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return ApiResponse.onErrorForOverride(ErrorStatus.NOT_FOUND_HANDLER, null);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleEntityNotFound(EntityNotFoundException ex) {
+        return ApiResponse.onError(ErrorStatus.NOT_FOUND_HANDLER, ex.getMessage());
     }
 }
