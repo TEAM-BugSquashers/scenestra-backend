@@ -29,6 +29,12 @@ import java.util.Set;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/me")
+    @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
+    public ResponseEntity<ApiResponse<Object>> getMyInfo(@AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, userService.getUserInfo(principal.getUserId()));
+    }
+
     @PostMapping("/join")
     @Operation(summary = "회원가입", description = "새로운 회원을 생성합니다.")
     public ResponseEntity<ApiResponse<Object>> joinUser(@Valid @RequestBody UserJoinRequest reqDto) {

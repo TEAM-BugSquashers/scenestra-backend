@@ -95,4 +95,9 @@ public class UserService {
             userGenreRepository.saveAll(newUserGenresList);
         }
     }
+
+    public User getUserInfo(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
+    }
 }
