@@ -1,7 +1,10 @@
 package com.bugsquashers.backend.user;
 
+import com.bugsquashers.backend.user.dto.UserInfoUpdateRequest;
 import com.bugsquashers.backend.user.dto.UserJoinRequest;
 import com.bugsquashers.backend.user.dto.UserJoinResponse;
+import com.bugsquashers.backend.user.dto.UserPasswordUpdateRequest;
+import com.bugsquashers.backend.user.dto.UserInfoResponse;
 import com.bugsquashers.backend.user.service.UserService;
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;
@@ -31,7 +34,7 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
-    public ResponseEntity<ApiResponse<Object>> getMyInfo(@AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ApiResponse<UserInfoResponse>> getMyInfo(@AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.onSuccess(SuccessStatus.OK, userService.getUserInfo(principal.getUserId()));
     }
 
@@ -62,5 +65,21 @@ public class UserController {
                                                                      Set<Integer> genres) {
         userService.updateUserPreferredGenres(principal.getUserId(), genres);
         return ApiResponse.onSuccess(SuccessStatus.OK, "선호 장르가 수정되었습니다.");
+    }
+
+    @PutMapping("/info")
+    @Operation(summary = "유저 정보 수정", description = "유저 정보를 수정합니다.")
+    public ResponseEntity<ApiResponse<Object>> updateUserInfo(@AuthenticationPrincipal UserPrincipal principal,
+                                                                     @RequestBody @Valid UserInfoUpdateRequest reqDto) {
+        userService.updateUserInfo(principal.getUserId(), reqDto);
+        return ApiResponse.onSuccess(SuccessStatus.OK, "유저 정보가 수정되었습니다.");
+    }
+
+    @PutMapping("/password")
+    @Operation(summary = "비밀번호 수정", description = "유저 비밀번호를 수정합니다.")
+    public ResponseEntity<ApiResponse<Object>> updatePassword(@AuthenticationPrincipal UserPrincipal principal,
+                                                                     @RequestBody @Valid UserPasswordUpdateRequest reqDto) {
+        userService.updatePassword(principal.getUserId(), reqDto);
+        return ApiResponse.onSuccess(SuccessStatus.OK, "비밀번호가 수정되었습니다.");
     }
 }
