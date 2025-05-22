@@ -36,6 +36,16 @@ public class MovieController {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMovies());
     }
 
+    // 영화 상세 정보
+    @Operation(summary = "영화 상세 정보", description = "movieId를 이용해 해당 영화의 정보를 조회합니다.")
+    @GetMapping("/{movieId}")
+    public ResponseEntity<ApiResponse<Object>> getMovie(
+            @PathVariable String movieId) {
+
+        MovieDto dto = movieService.getMovieById(movieId);
+        return ApiResponse.onSuccess(SuccessStatus.OK, dto);
+    }
+
     // 장르 목록
     @GetMapping("/genres")
     @Operation(summary = "전체 장르 조회", description = "전체 장르를 조회합니다.")
@@ -77,6 +87,7 @@ public class MovieController {
 
     // 추천 페이지
     @GetMapping("/recommend")
+    @Operation(summary = "추천 페이지", description = "선호 장르(3개), 최신 영화, 인기 영화를 조회합니다.(5개)")
     public ResponseEntity<ApiResponse<Object>> recommendMovies(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(name="n", defaultValue="5") int n) {
