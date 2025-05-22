@@ -4,11 +4,10 @@ import com.bugsquashers.backend.movie.domain.Genre;
 import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.domain.UserGenre;
-import com.bugsquashers.backend.user.dto.UserJoinRequest;
-import com.bugsquashers.backend.user.dto.UserJoinResponse;
-import com.bugsquashers.backend.user.dto.UserPreferredGenreResponse;
+import com.bugsquashers.backend.user.dto.*;
 import com.bugsquashers.backend.user.repository.UserRepository;
 import com.bugsquashers.backend.user.repository.UserGenreRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -96,8 +96,58 @@ public class UserService {
         }
     }
 
-    public User getUserInfo(Long userId) {
-        return userRepository.findById(userId)
+    public UserInfoResponse getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
+
+        List<UserInfoResponse.UserGenreInfo> userGenreInfos = user.getUserGenres().stream()
+                .map(userGenre -> new UserInfoResponse.UserGenreInfo(
+                        userGenre.getGenre().getGenreId(),
+                        userGenre.getGenre().getName()
+                ))
+                .collect(Collectors.toList());
+
+        return new UserInfoResponse(
+                user.getUserId(),
+                user.getUsername(),
+                user.getRealName(),
+                user.getEmail(),
+                user.getMobile(),
+                user.getEnabled(),
+                user.getIsAdmin(),
+                user.getRegDate(),
+                userGenreInfos
+        );
+    }
+
+    @Transactional
+    public void updateUserInfo(Long userId, UserInfoUpdateRequest reqDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
+
+        validateDuplicateEmail(reqDto.getEmail());
+
+        user.setEmail(reqDto.getEmail());
+        user.setMobile(reqDto.getMobile());
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, UserPasswordUpdateRequest reqDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
+
+        if (!passwordEncoder.matches(reqDto.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        updatePassword(user, reqDto.getNewPassword());
     }
 }

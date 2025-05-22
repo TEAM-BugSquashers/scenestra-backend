@@ -2,6 +2,7 @@ package com.bugsquashers.backend.user;
 
 
 import com.bugsquashers.backend.user.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -18,11 +19,13 @@ public class UserPrincipal implements UserDetails, CredentialsContainer {
     private final Long userId;
     private final String username;
     private String password;
+    private User user;
 
     public UserPrincipal(User user) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
         this.password = user.getPassword();
+        this.user = user;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class UserPrincipal implements UserDetails, CredentialsContainer {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return this.user.getEnabled();
     }
 
     //인증 프로세스 완료 후 메모리에서 비밀번호 자동 삭제
