@@ -36,7 +36,7 @@ public class MovieService {
     // 영화 상세 정보
     public MovieDto getMovieById(String movieId) {
         Movie m = movieRepository.findById(movieId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found: " + movieId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 영화를 찾지 못했습니다.: " + movieId));
         return new MovieDto(m);
     }
 
@@ -95,14 +95,14 @@ public class MovieService {
 
     // Recommend
     public Map<String,Object> getRecommendations(Long userId, int n) {
-        // 1) 선호 장르 ID 추출
+        // 선호 장르 ID 추출
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         List<Integer> genreIds = user.getUserGenres().stream()
                 .map(ug -> ug.getGenre().getGenreId())
                 .collect(Collectors.toList());
 
-        // 2) 장르별 영화 묶음 생성
+        // 장르별 영화 묶음 생성
         List<GenreMoviesDto> byGenre = genreIds.stream()
                 .map(gid -> {
                     Genre g = genreRepository.findById(gid)
@@ -118,11 +118,11 @@ public class MovieService {
                 })
                 .collect(Collectors.toList());
 
-        // 3) 최신 Top-n, 인기 Top-n
+        // 최신 Top-n, 인기 Top-n
         List<MovieDto> newTop  = getLatestMoviesDto(n);
         List<MovieDto> bestTop = getMostPopularMoviesDto(n);
 
-        // 4) Map에 담아서 한 번에 리턴
+        // Map에 담아서 한 번에 리턴
         Map<String,Object> result = new LinkedHashMap<>();
         result.put("genreMovies", byGenre);
         result.put("newMovies",    newTop);
