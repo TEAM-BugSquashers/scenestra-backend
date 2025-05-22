@@ -36,7 +36,7 @@ public class MovieService {
     public List<GenreMoviesDto> getAllMoviesGroupedByGenre() {
         return genreRepository.findAll().stream()
                 .map(g -> {
-                    List<MovieDto> dtos = movieRepository.findAllByGenreName(g.getName()).stream()
+                    List<MovieDto> dtos = movieRepository.findAllByGenreId(g.getGenreId()).stream()
                             .map(MovieDto::new)    // Movie → MovieDto 로 변환
                             .collect(Collectors.toList());
                     return new GenreMoviesDto(
@@ -49,8 +49,8 @@ public class MovieService {
     }
 
     /** 장르 이름으로 영화 조회해서 MovieDto 리스트로 반환 */
-    public List<MovieDto> getMoviesByGenreNameDto(String genreName) {
-        return movieRepository.findAllByGenreName(genreName).stream()
+    public List<MovieDto> getMoviesByGenreNameDto(int genreId) {
+        return movieRepository.findAllByGenreId(genreId).stream()
                 .map(MovieDto::new)
                 .collect(Collectors.toList());
     }

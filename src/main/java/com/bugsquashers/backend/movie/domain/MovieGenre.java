@@ -1,5 +1,6 @@
 package com.bugsquashers.backend.movie.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,11 +18,13 @@ public class MovieGenre implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("movieId")
+    @JsonBackReference
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("genreId")
+    @JsonBackReference
     @JoinColumn(name = "genre_id")
     private Genre genre;
 

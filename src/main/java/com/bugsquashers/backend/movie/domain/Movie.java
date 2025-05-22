@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties("movieGenres")
 public class Movie {
     @Id
     private String movieId;
@@ -26,7 +25,6 @@ public class Movie {
 
     private String director;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date openDate;
 
     private Integer numAudience;

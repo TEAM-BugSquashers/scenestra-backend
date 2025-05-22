@@ -20,11 +20,11 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
             ON m.movie_id = mg.movie_id
           JOIN genre AS g
             ON mg.genre_id = g.genre_id
-         WHERE g.name = :genreName
+         WHERE g.genre_id = :genreId
       """,
             nativeQuery = true
     )
-    List<Movie> findAllByGenreName(@Param("genreName") String genreName);
+    List<Movie> findAllByGenreId(@Param("genreId") int genreId);
 
     // 최신 영화(NEW)
     List<Movie> findAllByOrderByOpenDateDesc();
