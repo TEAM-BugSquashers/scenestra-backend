@@ -8,6 +8,7 @@ import lombok.Getter;
 public class GenreResponse {
     private Integer genreId;
     private String name;
+    private String engName;
     private String videoUrl;
 }
 

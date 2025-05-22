@@ -42,21 +42,21 @@ public class MovieController {
     /** /api/genre/{name}/movie → MovieDto 리스트로 내려줌 */
     @GetMapping("/genres/{genreId}")
     public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable int genreId) {
-        List<MovieDto> dtos = movieService.getMoviesByGenreNameDto(genreId);
+        List<MovieDto> dtos = movieService.getTopNByGenreId(genreId, 20);
         return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
     }
 
     // New
     @GetMapping("/new")
     public ResponseEntity<ApiResponse<Object>> newestMovies() {
-        List<?> payload = movieService.getLatestMoviesDto();
+        List<?> payload = movieService.getLatestMoviesDto(20);
         return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 
     //Best
     @GetMapping("/best")
     public ResponseEntity<ApiResponse<Object>> popularMovies() {
-        List<MovieDto> payload = movieService.getMostPopularMoviesDto();
+        List<MovieDto> payload = movieService.getMostPopularMoviesDto(20);
         return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 }

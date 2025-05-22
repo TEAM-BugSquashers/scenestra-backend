@@ -12,11 +12,13 @@ import java.util.List;
 public class GenreMoviesDto {
     private Integer genreId;
     private String genreName;
+    private String engName;
     private List<MovieDto> movies;      // ← Movie 엔티티가 아니라 MovieDto
 
-    public GenreMoviesDto(Integer genreId, String genreName, List<MovieDto> movies) {
+    public GenreMoviesDto(Integer genreId, String genreName, String engName, List<MovieDto> movies) {
         this.genreId   = genreId;
         this.genreName = genreName;
+        this.engName   = engName;
         this.movies    = movies;
     }
 
