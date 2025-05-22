@@ -129,4 +129,12 @@ public class MovieService {
         result.put("bestMovies",   bestTop);
         return result;
     }
+
+    // search
+    public List<MovieDto> searchByTitle(String keyword) {
+        return movieRepository.findByTitleContainingIgnoreCase(keyword)
+                .stream()
+                .map(MovieDto::new)
+                .collect(Collectors.toList());
+    }
 }

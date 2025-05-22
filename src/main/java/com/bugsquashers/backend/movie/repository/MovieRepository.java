@@ -48,4 +48,8 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
 
     // 관객수 많은 순서(Best)
     List<Movie> findAllByOrderByNumAudienceDesc(Pageable pageable);
+
+    // 검색
+    List<Movie> findByTitleContainingIgnoreCase(String keyword);
+
 }

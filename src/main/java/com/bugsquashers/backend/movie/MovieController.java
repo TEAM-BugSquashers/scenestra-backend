@@ -85,10 +85,18 @@ public class MovieController {
     public ResponseEntity<ApiResponse<Object>> recommendMovies(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(name="n", defaultValue="5") int n) {
-
         Map<String,Object> payload =
                 movieService.getRecommendations(principal.getUserId(), n);
 
+        return ApiResponse.onSuccess(SuccessStatus.OK, payload);
+    }
+
+    // 검색
+    @GetMapping("/search")
+    @Operation(summary = "검색", description = "영화명으로 영화를 조회합니다.")
+    public ResponseEntity<ApiResponse<Object>> searchMovies(
+            @RequestParam("title") String keyword) {
+        List<MovieDto> payload = movieService.searchByTitle(keyword);
         return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 }
