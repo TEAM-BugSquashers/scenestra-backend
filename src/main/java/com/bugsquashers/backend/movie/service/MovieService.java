@@ -7,7 +7,6 @@ import com.bugsquashers.backend.movie.dto.GenreResponse;
 import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.movie.repository.MovieRepository;
 import com.bugsquashers.backend.user.domain.User;
-import com.bugsquashers.backend.user.domain.UserGenre;
 import com.bugsquashers.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

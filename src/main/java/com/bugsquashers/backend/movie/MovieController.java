@@ -1,12 +1,8 @@
 package com.bugsquashers.backend.movie;
 
-import com.bugsquashers.backend.movie.dto.GenreMoviesDto;
 import com.bugsquashers.backend.movie.dto.MovieDto;
 import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.user.UserPrincipal;
-import com.bugsquashers.backend.user.domain.UserGenre;
-import com.bugsquashers.backend.user.dto.UserPreferredGenreResponse;
-import com.bugsquashers.backend.user.service.UserService;
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
