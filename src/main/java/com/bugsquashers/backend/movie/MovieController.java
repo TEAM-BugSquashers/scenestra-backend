@@ -14,49 +14,49 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/movies")
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieService movieService;
 
     // 전체 영화
-    @GetMapping("/movie")
+    @GetMapping()
     public ResponseEntity<ApiResponse<Object>> allMovies() {
         //리턴값 SuccessStatus.OK 뒤에 , 넣고 넣어주기
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMovies());
     }
 
     // 장르 목록
-    @GetMapping("/genre")
+    @GetMapping("/genres")
     public ResponseEntity<ApiResponse<Object>> allGenres() {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllGenres());
     }
 
     // 장르별 영화 찾기(전체)
-    @GetMapping("/genre/movie")
+    @GetMapping("/grouped-by-genre")
     public ResponseEntity<ApiResponse<Object>> allMoviesByGenre() {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMoviesGroupedByGenre());
     }
 
     // 장르 이름으로 영화 조회
     /** /api/genre/{name}/movie → MovieDto 리스트로 내려줌 */
-    @GetMapping("/genre/{name}/movie")
-    public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable String name) {
-        List<MovieDto> dtos = movieService.getMoviesByGenreNameDto(name);
+    @GetMapping("/genres/{genreId}")
+    public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable int genreId) {
+        List<MovieDto> dtos = movieService.getTopNByGenreId(genreId, 20);
         return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
     }
 
     // New
-    @GetMapping("/movie/new")
+    @GetMapping("/new")
     public ResponseEntity<ApiResponse<Object>> newestMovies() {
-        List<?> payload = movieService.getLatestMoviesDto();
+        List<?> payload = movieService.getLatestMoviesDto(20);
         return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 
     //Best
-    @GetMapping("/movie/best")
+    @GetMapping("/best")
     public ResponseEntity<ApiResponse<Object>> popularMovies() {
-        List<MovieDto> payload = movieService.getMostPopularMoviesDto();
+        List<MovieDto> payload = movieService.getMostPopularMoviesDto(20);
         return ApiResponse.onSuccess(SuccessStatus.OK, payload);
     }
 }
