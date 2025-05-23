@@ -118,11 +118,10 @@ public class MovieService {
                 })
                 .collect(Collectors.toList());
 
-        // 최신 Top-n, 인기 Top-n
+        // 최신, 인기
         List<MovieDto> newTop  = getLatestMoviesDto(n);
         List<MovieDto> bestTop = getMostPopularMoviesDto(n);
 
-        // Map에 담아서 한 번에 리턴
         Map<String,Object> result = new LinkedHashMap<>();
         result.put("genreMovies", byGenre);
         result.put("newMovies",    newTop);

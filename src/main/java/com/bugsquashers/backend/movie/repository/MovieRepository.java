@@ -27,7 +27,7 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     )
     List<Movie> findAllByGenreId(@Param("genreId") int genreId);
 
-    //장르별 영화 찾기
+    //장르별 영화 찾기(관객수 높은 순)
     @Query(
             value = """
                     SELECT m.*
