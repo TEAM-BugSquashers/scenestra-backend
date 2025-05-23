@@ -1,6 +1,7 @@
 package com.bugsquashers.backend.movie;
 
 import com.bugsquashers.backend.movie.dto.MovieDto;
+import com.bugsquashers.backend.movie.dto.MovieDto2;
 import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.user.UserPrincipal;
 import com.bugsquashers.backend.util.response.ApiResponse;
@@ -36,7 +37,7 @@ public class MovieController {
     public ResponseEntity<ApiResponse<Object>> getMovie(
             @PathVariable String movieId) {
 
-        MovieDto dto = movieService.getMovieById(movieId);
+        MovieDto2 dto = movieService.getMovieById(movieId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dto);
     }
 

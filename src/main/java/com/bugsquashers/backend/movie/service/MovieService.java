@@ -4,6 +4,7 @@ import com.bugsquashers.backend.movie.domain.Genre;
 import com.bugsquashers.backend.movie.domain.Movie;
 import com.bugsquashers.backend.movie.dto.GenreMoviesDto;
 import com.bugsquashers.backend.movie.dto.GenreResponse;
+import com.bugsquashers.backend.movie.dto.MovieDto2;
 import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.movie.repository.MovieRepository;
 import com.bugsquashers.backend.user.domain.User;
@@ -34,10 +35,10 @@ public class MovieService {
     }
 
     // 영화 상세 정보
-    public MovieDto getMovieById(String movieId) {
+    public MovieDto2 getMovieById(String movieId) {
         Movie m = movieRepository.findById(movieId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 영화를 찾지 못했습니다.: " + movieId));
-        return new MovieDto(m);
+        return new MovieDto2(m);
     }
 
     // 전체 장르 목록 출력
