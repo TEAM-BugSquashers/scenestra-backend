@@ -27,6 +27,20 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     )
     List<Movie> findAllByGenreId(@Param("genreId") int genreId);
 
+    // 장르별 영화 찾기(20개씩)
+    @Query(
+            value = """
+        SELECT m.*
+          FROM movie m
+          JOIN movie_genre mg ON m.movie_id = mg.movie_id
+         WHERE mg.genre_id = :genreId
+         ORDER BY m.num_audience DESC
+         LIMIT 20
+      """,
+            nativeQuery = true
+    )
+    List<Movie> findTop20ByGenreId(@Param("genreId") Integer genreId);
+
     //장르별 영화 찾기(관객수 높은 순)
     @Query(
             value = """
