@@ -84,7 +84,7 @@ public class MovieController {
     @Operation(summary = "추천 페이지", description = "선호 장르(3개), 최신 영화, 인기 영화를 조회합니다.(5개)")
     public ResponseEntity<ApiResponse<Object>> recommendMovies(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam(name="n", defaultValue="5") int n) {
+            @RequestParam(name="n", defaultValue="7") int n) {
         Map<String,Object> payload =
                 movieService.getRecommendations(principal.getUserId(), n);
 
