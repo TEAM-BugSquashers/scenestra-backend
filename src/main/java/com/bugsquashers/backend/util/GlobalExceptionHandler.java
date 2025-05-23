@@ -91,6 +91,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleEntityNotFound(EntityNotFoundException ex) {
-        return ApiResponse.onError(ErrorStatus.NOT_FOUND_HANDLER, ex.getMessage());
+        return ApiResponse.onError(ErrorStatus.NO_ENTITY, ex.getMessage());
     }
 }

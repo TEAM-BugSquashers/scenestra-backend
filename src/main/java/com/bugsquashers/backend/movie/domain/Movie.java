@@ -34,7 +34,7 @@ public class Movie {
 
     @OneToMany(
             mappedBy = "movie",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
