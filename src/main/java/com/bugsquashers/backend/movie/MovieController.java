@@ -48,19 +48,18 @@ public class MovieController {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllGenres());
     }
 
-    // 장르별 영화 찾기(전체)
+    // 장르별 영화 찾기 - 장르별 20개 씩
     @GetMapping("/grouped-by-genre")
     @Operation(summary = "장르별 영화 조회", description = "장르별 그룹화된 영화 목록을 조회합니다.(최대 20개)")
     public ResponseEntity<ApiResponse<Object>> allMoviesByGenre() {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMoviesGroupedByGenre());
     }
 
-    // 장르 이름으로 영화 조회
-    /** /api/genre/{name}/movie → MovieDto 리스트로 내려줌 */
+    // 장르 id 으로 영화 조회 - 해당 장르의 영화 전체
     @GetMapping("/genres/{genreId}")
     @Operation(summary = "장르별 전체 영화 조회", description = "장르별 전체 영화를 조회합니다.")
     public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable int genreId) {
-        List<MovieDto> dtos = movieService.getTopNByGenreId(genreId, 20);
+        List<MovieDto> dtos = movieService.getMovieByGenreId(genreId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
     }
 

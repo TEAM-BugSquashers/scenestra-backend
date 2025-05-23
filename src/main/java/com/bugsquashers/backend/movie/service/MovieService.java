@@ -43,17 +43,20 @@ public class MovieService {
 
     // 전체 장르 목록 출력
     public List<GenreResponse> getAllGenres() {
-        List<Genre> genres = genreRepository.findAll(); // 또는 N+1 방지된 쿼리 사용
+        List<Genre> genres = genreRepository.findAll();
         return genres.stream()
                 .map(genre -> new GenreResponse(genre.getGenreId(), genre.getName(), genre.getEngName(), genre.getVideoUrl()))
                 .collect(Collectors.toList());
     }
 
-    // 장르별 영화 찾기 (장르 클릭 시 해당 장르의 영화 전체 출력하게 하기)
+    // 장르별 영화 찾기 - 20개씩
+    // 갯수제한걸기 (20개)
     public List<GenreMoviesDto> getAllMoviesGroupedByGenre() {
         return genreRepository.findAll().stream()
                 .map(g -> {
-                    List<MovieDto> dtos = movieRepository.findAllByGenreId(g.getGenreId()).stream()
+                    List<MovieDto> dtos = movieRepository
+                            .findTop20ByGenreId(g.getGenreId())
+                            .stream()
                             .map(MovieDto::new)
                             .collect(Collectors.toList());
                     return new GenreMoviesDto(
@@ -67,7 +70,17 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
-    // 장르 id 로 영화 조회
+    // 장르 id 로 영화 조회 - 해당 장르의 영화 전체
+    // 갯수제한 풀기
+    public List<MovieDto> getMovieByGenreId(int genreId) {
+        return movieRepository
+                .findAllByGenreId(genreId)
+                .stream()
+                .map(MovieDto::new)
+                .collect(Collectors.toList());
+    }
+
+    // 추천 페이지용
     public List<MovieDto> getTopNByGenreId(int genreId, int n) {
         Pageable page = PageRequest.of(0, n);
         return movieRepository
@@ -76,6 +89,7 @@ public class MovieService {
                 .map(MovieDto::new)
                 .collect(Collectors.toList());
     }
+
 
     // NEW
     public List<MovieDto> getLatestMoviesDto(int n) {
