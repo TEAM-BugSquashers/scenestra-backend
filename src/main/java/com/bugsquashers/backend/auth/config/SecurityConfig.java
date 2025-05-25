@@ -6,7 +6,6 @@ import com.bugsquashers.backend.auth.jwt.JwtService;
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +34,6 @@ public class SecurityConfig {
         basicLoginFilter.setAuthenticationManager(authenticationManager);
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtService);
-
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
