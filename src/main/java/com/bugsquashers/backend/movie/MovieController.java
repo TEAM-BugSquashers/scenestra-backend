@@ -1,6 +1,7 @@
 package com.bugsquashers.backend.movie;
 
 import com.bugsquashers.backend.movie.dto.MovieDto;
+import com.bugsquashers.backend.movie.dto.MovieDto2;
 import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.user.UserPrincipal;
 import com.bugsquashers.backend.util.response.ApiResponse;
@@ -36,7 +37,7 @@ public class MovieController {
     public ResponseEntity<ApiResponse<Object>> getMovie(
             @PathVariable String movieId) {
 
-        MovieDto dto = movieService.getMovieById(movieId);
+        MovieDto2 dto = movieService.getMovieById(movieId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dto);
     }
 
@@ -47,19 +48,18 @@ public class MovieController {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllGenres());
     }
 
-    // 장르별 영화 찾기(전체)
+    // 장르별 영화 찾기 - 장르별 20개 씩
     @GetMapping("/grouped-by-genre")
     @Operation(summary = "장르별 영화 조회", description = "장르별 그룹화된 영화 목록을 조회합니다.(최대 20개)")
     public ResponseEntity<ApiResponse<Object>> allMoviesByGenre() {
         return ApiResponse.onSuccess(SuccessStatus.OK, movieService.getAllMoviesGroupedByGenre());
     }
 
-    // 장르 이름으로 영화 조회
-    /** /api/genre/{name}/movie → MovieDto 리스트로 내려줌 */
+    // 장르 id 으로 영화 조회 - 해당 장르의 영화 전체
     @GetMapping("/genres/{genreId}")
     @Operation(summary = "장르별 전체 영화 조회", description = "장르별 전체 영화를 조회합니다.")
     public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable int genreId) {
-        List<MovieDto> dtos = movieService.getTopNByGenreId(genreId, 20);
+        List<MovieDto> dtos = movieService.getMovieByGenreId(genreId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
     }
 
@@ -84,7 +84,7 @@ public class MovieController {
     @Operation(summary = "추천 페이지", description = "선호 장르(3개), 최신 영화, 인기 영화를 조회합니다.(5개)")
     public ResponseEntity<ApiResponse<Object>> recommendMovies(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam(name="n", defaultValue="5") int n) {
+            @RequestParam(name="n", defaultValue="7") int n) {
         Map<String,Object> payload =
                 movieService.getRecommendations(principal.getUserId(), n);
 
