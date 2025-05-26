@@ -5,9 +5,8 @@ import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.domain.UserGenre;
 import com.bugsquashers.backend.user.dto.*;
-import com.bugsquashers.backend.user.repository.UserRepository;
 import com.bugsquashers.backend.user.repository.UserGenreRepository;
-import jakarta.validation.Valid;
+import com.bugsquashers.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -125,7 +124,9 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
 
-        validateDuplicateEmail(reqDto.getEmail());
+        if (!user.getEmail().equals(reqDto.getEmail())) {
+            validateDuplicateEmail(reqDto.getEmail());
+        }
 
         user.setEmail(reqDto.getEmail());
         user.setMobile(reqDto.getMobile());
