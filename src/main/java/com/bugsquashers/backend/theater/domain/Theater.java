@@ -1,8 +1,10 @@
 package com.bugsquashers.backend.theater.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Theater {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +16,8 @@ public class Theater {
     private String image;
 
     private int numPeople;
+
+    private int numPeopleMax;
 
     private String info;
 

@@ -4,11 +4,15 @@ import com.bugsquashers.backend.movie.domain.Movie;
 import com.bugsquashers.backend.theater.domain.Theater;
 import com.bugsquashers.backend.user.domain.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@ToString
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

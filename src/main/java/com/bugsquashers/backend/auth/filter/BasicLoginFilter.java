@@ -14,14 +14,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class BasicLoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -81,10 +80,14 @@ public class BasicLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(errorStatus.getHttpStatus().value());
         response.setContentType("application/json;charset=UTF-8");
 
+        String erroorMessage = failed.getMessage();
+        if (failed instanceof BadCredentialsException) {
+            erroorMessage = "아이디 또는 비밀번호가 일치하지 않습니다.";
+        }
         ApiResponse<Void> apiResponse = new ApiResponse<>(
                 false,
                 errorStatus.getCode(),
-                failed.getMessage(),
+                erroorMessage,
                 null
         );
 

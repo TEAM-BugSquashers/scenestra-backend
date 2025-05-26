@@ -79,6 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             // 리프레쉬 토큰 검증 성공 -> 액세스 재발급 및 인증처리
                             String newAccessToken = jwtService.createAccessToken(response, user);
                             jwtService.createRefreshToken(response, user);
+
                             setAuthentication(newAccessToken);
                             filterChain.doFilter(request, response);
                             return;

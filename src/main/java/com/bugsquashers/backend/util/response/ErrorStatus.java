@@ -15,6 +15,7 @@ public enum ErrorStatus {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(), "허용되지 않는 HTTP 메서드입니다."),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, HttpStatus.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(), "지원되지 않는 미디어 타입입니다."),
     NOT_FOUND_HANDLER(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.getReasonPhrase(), "해당하는 리소스를 찾을 수 없습니다."),
+    NO_ENTITY(HttpStatus.BAD_REQUEST, "NO_CONTENT", "표시할 콘텐츠가 없습니다."),
     ;
 
     private final HttpStatus httpStatus;
