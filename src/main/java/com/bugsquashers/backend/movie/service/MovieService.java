@@ -4,6 +4,7 @@ import com.bugsquashers.backend.movie.domain.Genre;
 import com.bugsquashers.backend.movie.domain.Movie;
 import com.bugsquashers.backend.movie.dto.GenreMoviesDto;
 import com.bugsquashers.backend.movie.dto.GenreResponse;
+import com.bugsquashers.backend.movie.dto.MovieDto;
 import com.bugsquashers.backend.movie.dto.MovieDto2;
 import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.movie.repository.MovieRepository;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.bugsquashers.backend.movie.dto.MovieDto;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -150,5 +150,10 @@ public class MovieService {
                 .stream()
                 .map(MovieDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public Movie getMovieByMovieId(String movieId) {
+        return movieRepository.findByMovieId(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 영화를 찾지 못했습니다.: " + movieId));
     }
 }

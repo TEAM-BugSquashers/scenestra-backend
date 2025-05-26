@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, String> {
     //전체 영화 찾기
@@ -66,4 +67,6 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     // 검색
     List<Movie> findByTitleContainingIgnoreCase(String keyword);
 
+    // 영화 ID로 영화 찾기
+    Optional<Movie> findByMovieId(String movieID);
 }
