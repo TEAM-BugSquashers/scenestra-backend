@@ -5,12 +5,14 @@ import com.bugsquashers.backend.theater.domain.Theater;
 import com.bugsquashers.backend.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
 @Getter
 @ToString
 public class Reservation {
@@ -38,4 +40,13 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
     private Movie movie;
+
+    public Reservation(LocalDateTime startDateTime, int timeUnit, int numPeople, Movie movie, Theater theater, User user) {
+        this.startDateTime = startDateTime;
+        this.timeUnit = timeUnit;
+        this.numPeople = numPeople;
+        this.movie = movie;
+        this.theater = theater;
+        this.user = user;
+    }
 }

@@ -15,4 +15,6 @@ public interface TheaterRepository extends JpaRepository<Theater, Integer> {
 
     @Query("SELECT t FROM Theater t WHERE t.numPeople <= :num AND t.numPeopleMax >= :num")
     List<Theater> findTheatersForCapacity(@Param("num") int num);
+
+    Optional<Theater> findByTheaterId(int theaterId);
 }

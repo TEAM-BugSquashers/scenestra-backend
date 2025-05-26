@@ -5,12 +5,16 @@ import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.reservation.ReservationRepository;
 import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.theater.TheaterService;
+import com.bugsquashers.backend.theater.domain.Theater;
+import com.bugsquashers.backend.user.domain.User;
+import com.bugsquashers.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -21,6 +25,7 @@ public class ReservationService {
     private final MovieService movieService;
     private final TimeSlotCalculationService timeSlotCalculationService;
     private final ReservationRepository reservationRepository;
+    private final UserService userService;
 
     /*
       컨트롤러 대응 메서드
@@ -103,9 +108,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<LocalDateTime> getAvailableTimesInDay(int theaterId, String movieId, LocalDate date) {
         // 내일 이후 날짜만 && 한달까지만 예약 가능
-        if (date.isBefore(LocalDate.now().plusDays(1)) || date.isAfter(LocalDate.now().plusMonths(1))) {
-            throw new IllegalArgumentException("예약은 내일부터 한 달 이내만 가능합니다.");
-        }
+        checkDate(date);
 
         Movie movie = movieService.getMovieByMovieId(movieId);
 
@@ -126,10 +129,70 @@ public class ReservationService {
         return timeSlotCalculationService.filterAvailableSlots(availableSlots, reservations, requiredTimeUnits);
     }
 
+    /**
+     * 예약 가능 여부 확인
+     * 특정 영화, 상영관, 날짜, 시간에 대해 예약 가능 여부를 확인합니다.
+     *
+     * @param movieId   영화 ID
+     * @param theaterId 상영관 ID
+     * @param date      예약 날짜
+     * @param time      예약 시간
+     * @param numPeople 예약 인원 수
+     */
+    @Transactional(readOnly = true)
+    public void checkReservationAvailability(String movieId, Integer theaterId, LocalDate date, LocalTime time, Integer numPeople) {
+        //예약 가능 인원수 확인
+        if (!theaterService.isCapacityAvailable(theaterId, numPeople)) {
+            throw new IllegalArgumentException("예약 인원 수가 상영관의 수용 인원을 초과합니다.");
+        }
+
+        // 날짜 유효성 검사 및 예약 가능 시간 조회
+        List<LocalDateTime> availableTimes = getAvailableTimesInDay(theaterId, movieId, date);
+        LocalDateTime requestedTime = date.atTime(time);
+
+        // 요청한 시간대가 예약 가능한 시간대에 포함되는지 확인
+        if (!availableTimes.contains(requestedTime)) {
+            throw new IllegalArgumentException("요청한 날짜의 시간대는 예약 가능한 시간이 아닙니다.");
+        }
+    }
+
+    @Transactional
+    public Reservation createReservation(String movieId, Integer theaterId, LocalDate date, LocalTime time, Integer numPeople, long userId) {
+        // 예약 가능 여부 검증
+        checkReservationAvailability(movieId, theaterId, date, time, numPeople);
+
+        // 필요한 객체 및 데이터 조회
+        Movie movie = movieService.getMovieByMovieId(movieId);
+        Theater theater = theaterService.getTheaterById(theaterId);
+        LocalDateTime startDateTime = date.atTime(time);
+        int timeUnit = timeSlotCalculationService.calculateRequiredTimeUnits(movie);
+        User user = userService.getUserById(userId);
+
+        Reservation reservation = new Reservation(
+                startDateTime,
+                timeUnit,
+                numPeople,
+                movie,
+                theater,
+                user
+        );
+
+        // 예약 저장 및 반환
+        return reservationRepository.save(reservation);
+    }
+
 
     /*
      공통사용 서비스 메서드(core business logic)
     */
+    private void checkDate(LocalDate date) {
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        LocalDate maxBookingDate = today.plusMonths(1);
 
-
+        if (date.isBefore(tomorrow) || date.isAfter(maxBookingDate)) {
+            throw new IllegalArgumentException("예약은 내일부터 한 달 이내만 가능합니다.");
+        }
+    }
 }
+
