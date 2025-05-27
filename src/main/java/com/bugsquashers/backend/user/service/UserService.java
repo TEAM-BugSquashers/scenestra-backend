@@ -5,9 +5,8 @@ import com.bugsquashers.backend.movie.repository.GenreRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.domain.UserGenre;
 import com.bugsquashers.backend.user.dto.*;
-import com.bugsquashers.backend.user.repository.UserRepository;
 import com.bugsquashers.backend.user.repository.UserGenreRepository;
-import jakarta.validation.Valid;
+import com.bugsquashers.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -145,7 +144,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
 
         if (!passwordEncoder.matches(reqDto.getOldPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("현재 비밀번호가 틀렸습니다.");
         }
 
         updatePassword(user, reqDto.getNewPassword());
