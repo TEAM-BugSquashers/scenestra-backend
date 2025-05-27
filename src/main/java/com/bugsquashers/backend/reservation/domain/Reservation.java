@@ -6,6 +6,7 @@ import com.bugsquashers.backend.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CurrentTimestamp;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 @ToString
 public class Reservation {
     @Id
@@ -43,7 +45,9 @@ public class Reservation {
 
     private ReservationStatus status;
 
-    public Reservation(LocalDateTime startDateTime, int timeUnit, int numPeople, Movie movie, Theater theater, User user) {
+    private int totalPrice;
+
+    public Reservation(LocalDateTime startDateTime, int timeUnit, int numPeople, Movie movie, Theater theater, User user, int totalPrice) {
         this.startDateTime = startDateTime;
         this.timeUnit = timeUnit;
         this.numPeople = numPeople;
@@ -51,5 +55,6 @@ public class Reservation {
         this.theater = theater;
         this.user = user;
         this.status = ReservationStatus.CONFIRMED;
+        this.totalPrice = totalPrice;
     }
 }

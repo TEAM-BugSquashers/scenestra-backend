@@ -10,5 +10,6 @@ public class GetAvailableTimesInDayResponse {
     private int timeUnit;
     private String movieName;
     private String theaterName;
+    private int totalPrice;
     private List<LocalDateTime> availableTimes;
 }

@@ -81,4 +81,25 @@ public class ReservationController {
         return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getReservationDetails(reservationId, principal.getUserId()));
     }
 
+    @DeleteMapping("/{reservationId}")
+    @Operation(summary = "예약 취소", description = "예약 ID를 통해 예약을 취소합니다.")
+    public ResponseEntity<ApiResponse<Object>> cancelReservation(@PathVariable Integer reservationId, @AuthenticationPrincipal UserPrincipal principal) {
+        reservationService.cancelReservation(reservationId, principal.getUserId());
+        return ApiResponse.onSuccess(SuccessStatus.OK, "예약이 취소되었습니다.");
+    }
+
+    @GetMapping("/my/all")
+    @Operation(summary = "내 예약 목록 조회", description = "로그인한 사용자의 모든 예약 목록을 조회합니다.")
+    public ResponseEntity<ApiResponse<Object>> getMyReservations(@AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getMyReservations(principal.getUserId()));
+    }
+
+    @GetMapping("/my/in-progress")
+    @Operation(summary = "내 진행 중인 예약 목록 조회", description = "로그인한 사용자의 진행 중인 예약 목록을 조회합니다.")
+    public ResponseEntity<ApiResponse<Object>> getMyInProgressReservations(@AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getMyInProgressReservations(principal.getUserId()));
+    }
+
+
+
 }

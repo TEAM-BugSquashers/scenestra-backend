@@ -20,6 +20,7 @@ public class ReservationDetailsResponse {
     private LocalDateTime regDate;
     private ReservationStatus status;
     private String statusString;
+    private int totalPrice;
 
     // 영화 정보
     private String movieId;
@@ -46,6 +47,7 @@ public class ReservationDetailsResponse {
         this.regDate = reservation.getRegDate();
         this.status = reservation.getStatus();
         this.statusString = reservation.getStatus().getDescription();
+        this.totalPrice = reservation.getTotalPrice();
 
         this.movieId = reservation.getMovie().getMovieId();
         this.movieTitle = reservation.getMovie().getTitle();

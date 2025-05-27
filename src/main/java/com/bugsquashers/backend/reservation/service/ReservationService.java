@@ -82,6 +82,7 @@ public class ReservationService {
         response.setMovieName(movie.getTitle());
         response.setTheaterName(theater.getName());
         response.setAvailableTimes(availableTimes);
+        response.setTotalPrice(getTotalPrice(theater, timeUnit));
 
         return response;
     }
@@ -121,15 +122,54 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public ReservationDetailsResponse getReservationDetails(Integer reservationId, Long userId) {
         // 예약 ID로 예약 정보 조회
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 예약을 찾을 수 없습니다."));
+        Reservation reservation = getReservationById(reservationId);
 
         // 예약한 사용자의 ID와 요청한 사용자의 ID가 일치하는지 확인
-        if (!reservation.getUser().getUserId().equals(userId)) {
-            throw new AccessDeniedException("해당 예약은 요청한 사용자의 예약이 아닙니다.");
-        }
+        validateUserAccess(userId, reservation);
 
         return new ReservationDetailsResponse(reservation);
+    }
+
+    /**
+     * 예약 취소 서비스(컨트롤러)
+     * 예약 ID와 사용자 ID를 통해 예약을 취소합니다.
+     */
+    @Transactional
+    public void cancelReservation(Integer reservationId, Long userId) {
+        // 예약 ID로 예약 정보 조회
+        Reservation reservation = getReservationById(reservationId);
+
+        // 예약한 사용자의 ID와 요청한 사용자의 ID가 일치하는지 확인
+        validateUserAccess(userId, reservation);
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservationRepository.save(reservation);
+    }
+
+    public List<ReservationDetailsResponse> getMyReservations(Long userId) {
+        User user = userService.getUserById(userId);
+        List<Reservation> reservations = reservationRepository.findByUser(user);
+
+        if (reservations.isEmpty()) {
+            throw new EntityNotFoundException("해당 사용자의 예약을 찾을 수 없습니다.");
+        }
+
+        List<ReservationDetailsResponse> response = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            response.add(new ReservationDetailsResponse(reservation));
+        }
+
+        return response;
+    }
+
+    public List<ReservationDetailsResponse> getMyInProgressReservations(Long userId) {
+
+        return null;
+    }
+
+    public Reservation getReservationById(Integer reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 예약을 찾을 수 없습니다."));
     }
 
 
@@ -241,6 +281,7 @@ public class ReservationService {
         // 예약 객체 생성
         LocalDateTime startDateTime = date.atTime(time);
         int timeUnit = timeSlotCalculationService.calculateRequiredTimeUnits(movie);
+        int totalPrice = getTotalPrice(theater, timeUnit);
 
         Reservation reservation = new Reservation(
                 startDateTime,
@@ -248,7 +289,8 @@ public class ReservationService {
                 numPeople,
                 movie,
                 theater,
-                user
+                user,
+                totalPrice
         );
 
         // 예약 저장 및 반환
@@ -318,5 +360,15 @@ public class ReservationService {
         return theaterService.isCapacityAvailable(theater.getTheaterId(), numPeople);
     }
 
+    private int getTotalPrice(Theater theater, int timeUnit) {
+        int theaterPrice = theater.getPrice();
+        return theaterPrice * timeUnit;
+    }
+
+    private void validateUserAccess(Long userId, Reservation reservation) {
+        if (!reservation.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("해당 예약은 요청한 사용자의 예약이 아닙니다.");
+        }
+    }
 }
 
