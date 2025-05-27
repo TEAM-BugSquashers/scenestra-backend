@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,12 +73,25 @@ public class MovieService {
 
     // 장르 id 로 영화 조회 - 해당 장르의 영화 전체
     // 갯수제한 풀기
-    public List<MovieDto> getMovieByGenreId(int genreId) {
-        return movieRepository
+    public List<GenreMoviesDto> getMovieByGenreId(int genreId) {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 장르를 찾지 못했습니다.: " + genreId));
+
+        List<MovieDto> movieDtos = movieRepository
                 .findAllByGenreId(genreId)
                 .stream()
                 .map(MovieDto::new)
                 .collect(Collectors.toList());
+
+        GenreMoviesDto resultDto = new GenreMoviesDto(
+                genre.getGenreId(),
+                genre.getName(),
+                genre.getEngName(),
+                genre.getVideoUrl(),
+                movieDtos
+        );
+
+        return Collections.singletonList(resultDto);
     }
 
     // 추천 페이지용
