@@ -34,8 +34,7 @@ public class MovieController {
     // 영화 상세 정보
     @Operation(summary = "영화 상세 정보", description = "movieId를 이용해 해당 영화의 정보를 조회합니다.")
     @GetMapping("/{movieId}")
-    public ResponseEntity<ApiResponse<Object>> getMovie(
-            @PathVariable String movieId) {
+    public ResponseEntity<ApiResponse<Object>> getMovie(@PathVariable String movieId) {
 
         MovieDto2 dto = movieService.getMovieById(movieId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dto);

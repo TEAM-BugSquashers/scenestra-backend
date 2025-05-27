@@ -3,11 +3,15 @@ package com.bugsquashers.backend.review.domain;
 import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.user.domain.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Setter
+@Getter
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
