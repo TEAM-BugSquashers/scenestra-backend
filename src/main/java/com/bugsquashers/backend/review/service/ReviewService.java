@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class ReviewService {
         review.setContent(dto.getContent());
         review.setStar(dto.getStar());
         review.setTitle(dto.getTitle());
+        review.setReg_date(LocalDateTime.now());
         review.setViewCount(0);
         review.setReservation(reservation);
         review.setUser(user);
@@ -52,7 +54,7 @@ public class ReviewService {
     }
 
     // 전체 리뷰 목록
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ReviewDto> getAllReview() {
         List<Review> reviews = reviewRepository.findAll();
         return reviews.stream().map(this::toDto).toList();
