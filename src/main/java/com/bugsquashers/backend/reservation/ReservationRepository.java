@@ -12,4 +12,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findByTheater_TheaterIdAndStartDateTimeBetweenAndStatusNot(int theaterId, LocalDateTime startDateTime, LocalDateTime endDateTime, ReservationStatus status);
 
     List<Reservation> findByUser(User user);
+
+    List<Reservation> findByUserAndStatus(User user, ReservationStatus status);
+
+    List<Reservation> findByStatus(ReservationStatus status);
 }

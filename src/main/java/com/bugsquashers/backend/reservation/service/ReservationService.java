@@ -146,6 +146,7 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationDetailsResponse> getMyReservations(Long userId) {
         User user = userService.getUserById(userId);
         List<Reservation> reservations = reservationRepository.findByUser(user);
@@ -162,9 +163,21 @@ public class ReservationService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationDetailsResponse> getMyInProgressReservations(Long userId) {
+        User user = userService.getUserById(userId);
+        List<Reservation> reservations = reservationRepository.findByUserAndStatus(user, ReservationStatus.CONFIRMED);
 
-        return null;
+        if (reservations.isEmpty()) {
+            throw new EntityNotFoundException("해당 사용자의 예약을 찾을 수 없습니다.");
+        }
+
+        List<ReservationDetailsResponse> response = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            response.add(new ReservationDetailsResponse(reservation));
+        }
+
+        return response;
     }
 
     public Reservation getReservationById(Integer reservationId) {
