@@ -4,12 +4,16 @@ import com.bugsquashers.backend.movie.domain.Movie;
 import com.bugsquashers.backend.movie.service.MovieService;
 import com.bugsquashers.backend.reservation.ReservationRepository;
 import com.bugsquashers.backend.reservation.domain.Reservation;
+import com.bugsquashers.backend.reservation.domain.ReservationStatus;
 import com.bugsquashers.backend.reservation.dto.GetAvailableTimesInDayResponse;
+import com.bugsquashers.backend.reservation.dto.ReservationDetailsResponse;
 import com.bugsquashers.backend.theater.TheaterService;
 import com.bugsquashers.backend.theater.domain.Theater;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,6 +112,24 @@ public class ReservationService {
 
         // 공통 로직 호출
         return createReservationInternal(movie, theater, date, time, numPeople, user);
+    }
+
+    /**
+     * 예약 상세 조회 서비스(컨트롤러)
+     * 예약 ID를 통해 예약의 상세 정보를 조회합니다.
+     */
+    @Transactional(readOnly = true)
+    public ReservationDetailsResponse getReservationDetails(Integer reservationId, Long userId) {
+        // 예약 ID로 예약 정보 조회
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 예약을 찾을 수 없습니다."));
+
+        // 예약한 사용자의 ID와 요청한 사용자의 ID가 일치하는지 확인
+        if (!reservation.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("해당 예약은 요청한 사용자의 예약이 아닙니다.");
+        }
+
+        return new ReservationDetailsResponse(reservation);
     }
 
 
@@ -249,10 +271,11 @@ public class ReservationService {
      * 월별 예약 목록 조회
      */
     private List<Reservation> getReservationsForMonth(Theater theater, LocalDate firstDay, LocalDate lastDay) {
-        return reservationRepository.findByTheater_TheaterIdAndStartDateTimeBetween(
+        return reservationRepository.findByTheater_TheaterIdAndStartDateTimeBetweenAndStatusNot(
                 theater.getTheaterId(),
                 firstDay.atStartOfDay(),
-                lastDay.atTime(23, 59, 59)
+                lastDay.atTime(23, 59, 59),
+                ReservationStatus.CANCELLED
         );
     }
 
@@ -260,10 +283,11 @@ public class ReservationService {
      * 특정 날짜의 예약 목록 조회
      */
     private List<Reservation> getReservationsForDate(Theater theater, LocalDate date) {
-        return reservationRepository.findByTheater_TheaterIdAndStartDateTimeBetween(
+        return reservationRepository.findByTheater_TheaterIdAndStartDateTimeBetweenAndStatusNot(
                 theater.getTheaterId(),
                 date.atStartOfDay(),
-                date.atTime(23, 59, 59)
+                date.atTime(23, 59, 59),
+                ReservationStatus.CANCELLED
         );
     }
 
@@ -293,5 +317,6 @@ public class ReservationService {
     private boolean isCapacityAvailable(Theater theater, Integer numPeople) {
         return theaterService.isCapacityAvailable(theater.getTheaterId(), numPeople);
     }
+
 }
 

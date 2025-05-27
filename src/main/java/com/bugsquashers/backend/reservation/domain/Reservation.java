@@ -41,6 +41,8 @@ public class Reservation {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
+    private ReservationStatus status;
+
     public Reservation(LocalDateTime startDateTime, int timeUnit, int numPeople, Movie movie, Theater theater, User user) {
         this.startDateTime = startDateTime;
         this.timeUnit = timeUnit;
@@ -48,5 +50,6 @@ public class Reservation {
         this.movie = movie;
         this.theater = theater;
         this.user = user;
+        this.status = ReservationStatus.CONFIRMED;
     }
 }

@@ -75,5 +75,10 @@ public class ReservationController {
         );
     }
 
+    @GetMapping("/{reservationId}")
+    @Operation(summary = "예약 상세 조회", description = "예약 ID를 통해 예약의 상세 정보를 조회합니다.")
+    public ResponseEntity<ApiResponse<Object>> getReservationDetails(@PathVariable Integer reservationId, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getReservationDetails(reservationId, principal.getUserId()));
+    }
 
 }
