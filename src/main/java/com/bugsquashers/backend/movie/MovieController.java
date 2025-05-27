@@ -1,5 +1,6 @@
 package com.bugsquashers.backend.movie;
 
+import com.bugsquashers.backend.movie.dto.GenreMoviesDto;
 import com.bugsquashers.backend.movie.dto.MovieDto;
 import com.bugsquashers.backend.movie.dto.MovieDto2;
 import com.bugsquashers.backend.movie.service.MovieService;
@@ -34,8 +35,7 @@ public class MovieController {
     // 영화 상세 정보
     @Operation(summary = "영화 상세 정보", description = "movieId를 이용해 해당 영화의 정보를 조회합니다.")
     @GetMapping("/{movieId}")
-    public ResponseEntity<ApiResponse<Object>> getMovie(
-            @PathVariable String movieId) {
+    public ResponseEntity<ApiResponse<Object>> getMovie(@PathVariable String movieId) {
 
         MovieDto2 dto = movieService.getMovieById(movieId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dto);
@@ -59,7 +59,7 @@ public class MovieController {
     @GetMapping("/genres/{genreId}")
     @Operation(summary = "장르별 전체 영화 조회", description = "장르별 전체 영화를 조회합니다.")
     public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable int genreId) {
-        List<MovieDto> dtos = movieService.getMovieByGenreId(genreId);
+        List<GenreMoviesDto> dtos = movieService.getMovieByGenreId(genreId);
         return ApiResponse.onSuccess(SuccessStatus.OK, dtos);
     }
 
