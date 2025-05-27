@@ -35,7 +35,7 @@ public class ReservationController {
     @GetMapping("/available-times")
     @Operation(summary = "특정 날짜에 예약 가능한 시간 목록 조회", description = "특정 상영관에서 특정 영화의 특정 날짜에 예약 가능한 시간 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<Object>> getAvailableTimesInDay(@ParameterObject @Valid GetAvailableTimesRequest request) {
-        return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getAvailableTimesInDay(request.getTheaterId(), request.getMovieId(), request.getDay()));
+        return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getAvailableTimesInDayWithDetails(request.getTheaterId(), request.getMovieId(), request.getDay()));
     }
 
     //예약 가능 여부 최종 조회
