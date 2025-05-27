@@ -38,6 +38,7 @@ public class UserService {
     public UserJoinResponse userJoin(UserJoinRequest reqDto) {
         validateDuplicateUsername(reqDto.getUsername());
         validateDuplicateEmail(reqDto.getEmail());
+        validateDuplicateMobile(reqDto.getMobile());
 
         User user = User.builder()
                 .username(reqDto.getUsername())
@@ -69,6 +70,12 @@ public class UserService {
     public void validateDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
+        }
+    }
+
+    public void validateDuplicateMobile(String mobile) {
+        if (userRepository.existsByMobile(mobile)) {
+            throw new IllegalArgumentException("이미 가입된 휴대폰 번호 입니다.");
         }
     }
 
@@ -126,6 +133,10 @@ public class UserService {
 
         if (!user.getEmail().equals(reqDto.getEmail())) {
             validateDuplicateEmail(reqDto.getEmail());
+        }
+
+        if (!user.getMobile().equals(reqDto.getMobile())) {
+            validateDuplicateMobile(reqDto.getMobile());
         }
 
         user.setEmail(reqDto.getEmail());

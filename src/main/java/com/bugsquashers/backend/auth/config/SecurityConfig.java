@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/join").permitAll()
                         .requestMatchers("/api/users/check-username").permitAll()
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/movies/genres").permitAll()
                         .requestMatchers("/api/logout").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
