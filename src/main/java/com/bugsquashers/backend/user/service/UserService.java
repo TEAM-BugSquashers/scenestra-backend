@@ -146,7 +146,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
 
         if (!passwordEncoder.matches(reqDto.getOldPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("현재 비밀번호가 틀렸습니다.");
         }
 
         updatePassword(user, reqDto.getNewPassword());
