@@ -1,6 +1,7 @@
 package com.bugsquashers.backend.movie.repository;
 
 import com.bugsquashers.backend.movie.domain.Movie;
+import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, String> {
     //전체 영화 찾기
+    @NonNull
     List<Movie> findAll();
 
     //장르별 영화 찾기
@@ -31,13 +33,14 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     // 장르별 영화 찾기(20개씩)
     @Query(
             value = """
-        SELECT m.*
-          FROM movie m
-          JOIN movie_genre mg ON m.movie_id = mg.movie_id
-         WHERE mg.genre_id = :genreId
-         ORDER BY m.num_audience DESC
-         LIMIT 20
-      """,
+                    SELECT m.*
+                        FROM movie m
+                        JOIN movie_genre mg
+                            ON m.movie_id = mg.movie_id
+                        WHERE mg.genre_id = :genreId
+                        ORDER BY m.num_audience DESC
+                        LIMIT 20
+                    """,
             nativeQuery = true
     )
     List<Movie> findTop20ByGenreId(@Param("genreId") Integer genreId);
