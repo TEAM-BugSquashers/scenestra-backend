@@ -1,16 +1,22 @@
 package com.bugsquashers.backend.review.service;
 
+import com.bugsquashers.backend.image.ImageService;
 import com.bugsquashers.backend.reservation.ReservationRepository;
 import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.review.domain.Review;
+import com.bugsquashers.backend.review.domain.ReviewImage;
 import com.bugsquashers.backend.review.dto.ReviewDto;
+import com.bugsquashers.backend.review.repository.ReviewImageRepository;
 import com.bugsquashers.backend.review.repository.ReviewRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,41 +24,62 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final ReviewImageRepository reviewImageRepository;
     private final UserRepository userRepository;
-    private final ReservationRepository reservationRepository;
+    private final ImageService imageService;
 
     private ReviewDto toDto(Review review) {
         ReviewDto dto = new ReviewDto();
-        dto.setReviewId(review.getReviewId());
         dto.setContent(review.getContent());
-        dto.setReg_date(review.getReg_date());
         dto.setStar(review.getStar());
         dto.setTitle(review.getTitle());
-        dto.setViewCount(review.getViewCount());
         dto.setReservationId(review.getReservation() != null ? review.getReservation().getReservationId() : null);
-        dto.setUserName(review.getUser() != null ? review.getUser().getUsername() : null);
-        dto.setUserId(review.getUser() != null ? review.getUser().getUserId() : null);
+        List<ReviewImage> images = reviewImageRepository.findByReview(review);
+        List<String> imageUrls = images.stream()
+                .map(ReviewImage::getImageUrl)
+                .collect(Collectors.toList());
+        dto.setImageUrls(imageUrls);
         return dto;
     }
 
     // 글 쓰기
     public ReviewDto createReview(ReviewDto dto) {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow();
-        Reservation reservation = reservationRepository.findById(dto.getReservationId()).orElseThrow();;
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 유저의 최근 예약 한 건 조회
+        Reservation reservation = reviewRepository
+                .findTop1ByUserOrderByRegDateDesc(user)
+                .orElseThrow(() -> new RuntimeException("최근 예약 내역이 없습니다."));
+
         Review review = new Review();
         review.setContent(dto.getContent());
         review.setStar(dto.getStar());
         review.setTitle(dto.getTitle());
+        review.setRegDate(LocalDateTime.now());
         review.setViewCount(0);
         review.setReservation(reservation);
-        review.setUser(user);
 
-        Review saved = reviewRepository.save(review);
-        return toDto(saved);
+        reviewRepository.save(review);
+
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            for (MultipartFile file : dto.getImages()) {
+                String imageUrl = imageService.saveImage(file);
+
+                ReviewImage reviewImage = new ReviewImage();
+                reviewImage.setReview(review);
+                reviewImage.setImageUrl(imageUrl);
+                reviewImage.setRegDate(LocalDateTime.now());
+
+                reviewImageRepository.save(reviewImage);
+            }
+        }
+        return toDto(review);
     }
 
     // 전체 리뷰 목록
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ReviewDto> getAllReview() {
         List<Review> reviews = reviewRepository.findAll();
         return reviews.stream().map(this::toDto).toList();

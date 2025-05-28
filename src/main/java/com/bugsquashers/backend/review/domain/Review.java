@@ -23,7 +23,8 @@ public class Review {
     private String content;
 
     @CurrentTimestamp
-    private LocalDateTime reg_date;
+    @Column(name = "reg_date")
+    private LocalDateTime regDate;
 
     private Integer star;
 

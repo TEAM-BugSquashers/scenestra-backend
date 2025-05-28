@@ -1,5 +1,6 @@
 package com.bugsquashers.backend.movie.dto;
 
+import com.bugsquashers.backend.movie.domain.Genre;
 import com.bugsquashers.backend.movie.domain.Movie;
 import com.bugsquashers.backend.movie.domain.MovieGenre;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -33,7 +33,7 @@ public class MovieDto2 {
         this.posterUrl  = m.getPosterUrl();
         this.genreNames = m.getMovieGenres().stream()
                 .map(MovieGenre::getGenre)
-                .map(g -> g.getName())
-                .collect(Collectors.toList());
+                .map(Genre::getName)
+                .toList();
     }
 }

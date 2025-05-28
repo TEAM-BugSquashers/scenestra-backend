@@ -38,7 +38,7 @@ public class ImageService {
     public String saveImage(MultipartFile multipartFile) {
         String fileName = multipartFile.getOriginalFilename();
         String fileExt = fileName.substring(fileName.lastIndexOf("."));
-        String uuidName = UUID.randomUUID() + FileExt;
+        String uuidName = UUID.randomUUID() + fileExt;
 
         if (!Objects.requireNonNull(multipartFile.getContentType()).contains("image/")) {
             throw new IllegalArgumentException("허용되지 않는 형식의 파일입니다: " + multipartFile.getContentType());

@@ -6,6 +6,7 @@ import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +19,9 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     // 글 쓰기
-    @PostMapping
-    public ResponseEntity<ApiResponse<Object>> createReview(ReviewDto reviewDto) {
-        return ApiResponse.onSuccess(SuccessStatus.OK, reviewService.createReview(reviewDto));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<ReviewDto> createReview(@ModelAttribute ReviewDto reviewDto) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, reviewService.createReview(reviewDto)).getBody();
     }
 
     // 전체 리뷰 목록

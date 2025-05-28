@@ -4,21 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDto {
-    private Integer reviewId;
     private String content;
-    private LocalDateTime reg_date;
     private Integer star;
     private String title;
-    private Integer viewCount;
-    private String userName;
-    private Long userId;
     private Integer reservationId;
+    // 업로드
+    private List<MultipartFile> images;
+    // 응답
+    private List<String> imageUrls;
 }
