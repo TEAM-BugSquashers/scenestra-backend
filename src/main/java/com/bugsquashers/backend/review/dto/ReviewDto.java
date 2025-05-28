@@ -5,22 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDto {
-    private Integer reviewId;
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // 또는
-    private LocalDateTime reg_date;
     private Integer star;
     private String title;
-    private Integer viewCount;
-    private String userName;
-    private Long userId;
     private Integer reservationId;
+//    private List<MultipartFile> image;
+//    private List<String> image_url;
 }

@@ -8,6 +8,7 @@ import com.bugsquashers.backend.review.repository.ReviewRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,30 +25,31 @@ public class ReviewService {
 
     private ReviewDto toDto(Review review) {
         ReviewDto dto = new ReviewDto();
-        dto.setReviewId(review.getReviewId());
         dto.setContent(review.getContent());
-        dto.setReg_date(review.getReg_date());
         dto.setStar(review.getStar());
         dto.setTitle(review.getTitle());
-        dto.setViewCount(review.getViewCount());
         dto.setReservationId(review.getReservation() != null ? review.getReservation().getReservationId() : null);
-        dto.setUserName(review.getUser() != null ? review.getUser().getUsername() : null);
-        dto.setUserId(review.getUser() != null ? review.getUser().getUserId() : null);
         return dto;
     }
 
     // 글 쓰기
     public ReviewDto createReview(ReviewDto dto) {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow();
-        Reservation reservation = reservationRepository.findById(dto.getReservationId()).orElseThrow();;
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 유저의 최근 예약 한 건 조회
+        Reservation reservation = reviewRepository
+                .findTop1ByUserOrderByRegDateDesc(user)
+                .orElseThrow(() -> new RuntimeException("최근 예약 내역이 없습니다."));
+
         Review review = new Review();
         review.setContent(dto.getContent());
         review.setStar(dto.getStar());
         review.setTitle(dto.getTitle());
-        review.setReg_date(LocalDateTime.now());
+        review.setRegDate(LocalDateTime.now());
         review.setViewCount(0);
         review.setReservation(reservation);
-        review.setUser(user);
 
         Review saved = reviewRepository.save(review);
         return toDto(saved);
