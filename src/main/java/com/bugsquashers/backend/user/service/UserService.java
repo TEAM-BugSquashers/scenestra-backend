@@ -38,6 +38,7 @@ public class UserService {
     public UserJoinResponse userJoin(UserJoinRequest reqDto) {
         validateDuplicateUsername(reqDto.getUsername());
         validateDuplicateEmail(reqDto.getEmail());
+        validateDuplicateMobile(reqDto.getMobile());
 
         User user = User.builder()
                 .username(reqDto.getUsername())
@@ -69,6 +70,12 @@ public class UserService {
     public void validateDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 가입된 이메일 입니다.");
+        }
+    }
+
+    public void validateDuplicateMobile(String mobile) {
+        if (userRepository.existsByMobile(mobile)) {
+            throw new IllegalArgumentException("이미 가입된 휴대폰 번호 입니다.");
         }
     }
 
@@ -128,6 +135,10 @@ public class UserService {
             validateDuplicateEmail(reqDto.getEmail());
         }
 
+        if (!user.getMobile().equals(reqDto.getMobile())) {
+            validateDuplicateMobile(reqDto.getMobile());
+        }
+
         user.setEmail(reqDto.getEmail());
         user.setMobile(reqDto.getMobile());
 
@@ -146,7 +157,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다!"));
 
         if (!passwordEncoder.matches(reqDto.getOldPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("현재 비밀번호가 틀렸습니다.");
         }
 
         updatePassword(user, reqDto.getNewPassword());
