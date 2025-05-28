@@ -1,6 +1,5 @@
-package com.bugsquashers.backend.image.domain;
+package com.bugsquashers.backend.review.domain;
 
-import com.bugsquashers.backend.review.domain.Review;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CurrentTimestamp;
 
