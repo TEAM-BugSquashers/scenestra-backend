@@ -1,13 +1,11 @@
 package com.bugsquashers.backend.review.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -19,6 +17,8 @@ public class ReviewDto {
     private Integer star;
     private String title;
     private Integer reservationId;
-//    private List<MultipartFile> image;
-//    private List<String> image_url;
+    // 업로드
+    private List<MultipartFile> images;
+    // 응답
+    private List<String> imageUrls;
 }

@@ -1,9 +1,12 @@
 package com.bugsquashers.backend.review.service;
 
+import com.bugsquashers.backend.image.ImageService;
 import com.bugsquashers.backend.reservation.ReservationRepository;
 import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.review.domain.Review;
+import com.bugsquashers.backend.review.domain.ReviewImage;
 import com.bugsquashers.backend.review.dto.ReviewDto;
+import com.bugsquashers.backend.review.repository.ReviewImageRepository;
 import com.bugsquashers.backend.review.repository.ReviewRepository;
 import com.bugsquashers.backend.user.domain.User;
 import com.bugsquashers.backend.user.repository.UserRepository;
@@ -11,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,8 +24,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final ReviewImageRepository reviewImageRepository;
     private final UserRepository userRepository;
-    private final ReservationRepository reservationRepository;
+    private final ImageService imageService;
 
     private ReviewDto toDto(Review review) {
         ReviewDto dto = new ReviewDto();
@@ -29,6 +34,11 @@ public class ReviewService {
         dto.setStar(review.getStar());
         dto.setTitle(review.getTitle());
         dto.setReservationId(review.getReservation() != null ? review.getReservation().getReservationId() : null);
+        List<ReviewImage> images = reviewImageRepository.findByReview(review);
+        List<String> imageUrls = images.stream()
+                .map(ReviewImage::getImageUrl)
+                .collect(Collectors.toList());
+        dto.setImageUrls(imageUrls);
         return dto;
     }
 
@@ -51,8 +61,21 @@ public class ReviewService {
         review.setViewCount(0);
         review.setReservation(reservation);
 
-        Review saved = reviewRepository.save(review);
-        return toDto(saved);
+        reviewRepository.save(review);
+
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            for (MultipartFile file : dto.getImages()) {
+                String imageUrl = imageService.saveImage(file);
+
+                ReviewImage reviewImage = new ReviewImage();
+                reviewImage.setReview(review);
+                reviewImage.setImageUrl(imageUrl);
+                reviewImage.setRegDate(LocalDateTime.now());
+
+                reviewImageRepository.save(reviewImage);
+            }
+        }
+        return toDto(review);
     }
 
     // 전체 리뷰 목록
