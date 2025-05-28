@@ -37,7 +37,7 @@ public class ImageService {
     // 이미지 1개 업로드
     public String saveImage(MultipartFile multipartFile) {
         String fileName = multipartFile.getOriginalFilename();
-        String FileExt = fileName.substring(fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf("."));
         String uuidName = UUID.randomUUID() + FileExt;
 
         if (!Objects.requireNonNull(multipartFile.getContentType()).contains("image/")) {
