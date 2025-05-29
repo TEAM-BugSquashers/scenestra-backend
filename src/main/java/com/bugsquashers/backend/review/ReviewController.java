@@ -1,6 +1,7 @@
 package com.bugsquashers.backend.review;
 
-import com.bugsquashers.backend.review.dto.ReviewDto;
+import com.bugsquashers.backend.review.dto.ReviewRequest;
+import com.bugsquashers.backend.review.dto.ReviewResponse;
 import com.bugsquashers.backend.review.service.ReviewService;
 import com.bugsquashers.backend.util.response.ApiResponse;
 import com.bugsquashers.backend.util.response.SuccessStatus;
@@ -20,8 +21,8 @@ public class ReviewController {
 
     // 글 쓰기
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<ReviewDto> createReview(@ModelAttribute ReviewDto reviewDto) {
-        return ApiResponse.onSuccess(SuccessStatus.OK, reviewService.createReview(reviewDto)).getBody();
+    public ApiResponse<ReviewResponse> createReview(@ModelAttribute ReviewRequest reviewRequest) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, reviewService.createReview(reviewRequest)).getBody();
     }
 
     // 전체 리뷰 목록
@@ -39,9 +40,9 @@ public class ReviewController {
     }
 
     // 상영관 별 리뷰 목록
-    @GetMapping("/reviewTheater/{theaterId}")
+    @GetMapping("/theater/{theaterId}")
     @Operation(summary = "상영관 별 리뷰 목록(theaterId 이용)", description = "상영관 별 리뷰 목록을 조회합니다.")
-    public List<ReviewDto> getReviewsByTheater(@PathVariable Integer theaterId) {
+    public List<ReviewResponse> getReviewsByTheater(@PathVariable Integer theaterId) {
         return reviewService.getReviewByTheaterId(theaterId);
     }
 

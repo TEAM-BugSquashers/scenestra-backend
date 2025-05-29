@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,13 +11,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewDto {
+public class ReviewResponse {
     private String content;
     private Integer star;
     private String title;
     private Integer reservationId;
-    // 업로드
-    private List<MultipartFile> images;
     // 응답
     private List<String> imageUrls;
 }
