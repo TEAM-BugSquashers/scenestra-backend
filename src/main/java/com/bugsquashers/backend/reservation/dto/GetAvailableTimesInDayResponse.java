@@ -3,7 +3,7 @@ package com.bugsquashers.backend.reservation.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 
 @Data
 public class GetAvailableTimesInDayResponse {
@@ -11,5 +11,5 @@ public class GetAvailableTimesInDayResponse {
     private String movieName;
     private String theaterName;
     private int totalPrice;
-    private List<LocalDateTime> availableTimes;
+    private Map<LocalDateTime, String> availableTimes;
 }

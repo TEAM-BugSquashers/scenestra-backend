@@ -33,7 +33,7 @@ public class ReservationController {
 
     //특정 날짜에 예약 가능한 시간 목록 조회
     @GetMapping("/available-times")
-    @Operation(summary = "특정 날짜에 예약 가능한 시간 목록 조회", description = "특정 상영관에서 특정 영화의 특정 날짜에 예약 가능한 시간 목록을 조회합니다.")
+    @Operation(summary = "특정 날짜에 예약 가능한 시간 목록 조회", description = "특정 상영관에서 특정 영화의 특정 날짜에 예약 가능한 시간 목록을 조회합니다. (AVAILABLE: 예약가능, BLOCKED: 다른예약과 충돌함, BOOKED: 예약됨)")
     public ResponseEntity<ApiResponse<Object>> getAvailableTimesInDay(@ParameterObject @Valid GetAvailableTimesRequest request) {
         return ApiResponse.onSuccess(SuccessStatus.OK, reservationService.getAvailableTimesInDayWithDetails(request.getTheaterId(), request.getMovieId(), request.getDay()));
     }

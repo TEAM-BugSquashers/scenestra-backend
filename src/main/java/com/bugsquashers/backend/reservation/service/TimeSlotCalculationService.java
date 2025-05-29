@@ -52,7 +52,7 @@ public class TimeSlotCalculationService {
     }
 
     // 시작, 종료시간 사이의 모든 슬롯 생성
-    private List<LocalDateTime> generateAllTimeSlots(LocalDateTime start, LocalDateTime end) {
+    public List<LocalDateTime> generateAllTimeSlots(LocalDateTime start, LocalDateTime end) {
         List<LocalDateTime> slots = new ArrayList<>();
         LocalDateTime currentTime = start;
 
@@ -62,6 +62,16 @@ public class TimeSlotCalculationService {
         }
 
         return slots;
+    }
+
+    public List<LocalDateTime> generateAllTimeSlots(LocalDate date) {
+        // 해당 날짜의 운영 시간 가져옴
+        LocalDateTime startOfDay = date.atTime(OPENING_TIME);
+        // 종료 시간은 운영 종료 시간에서 영화 상영에 필요한 시간 단위 수를 고려하여 계산
+        LocalDateTime endOfDay = date.atTime(CLOSING_TIME);
+
+        return generateAllTimeSlots(startOfDay, endOfDay);
+
     }
 
     /**
@@ -95,5 +105,27 @@ public class TimeSlotCalculationService {
             });
         }
         return filteredSlots;
+    }
+
+    /**
+     * 주어진 시간이 기존 예약과 중복되는지 확인합니다.
+     *
+     * @param checkTime    확인하려는 시간
+     * @param reservations 기존 예약 목록
+     * @return 중복되면 true, 아니면 false
+     */
+    public boolean timeSlotOverlapping(LocalDateTime checkTime, List<Reservation> reservations) {
+        for (Reservation reservation : reservations) {
+            LocalDateTime reservedStart = reservation.getStartDateTime();
+            // 기존 예약 종료 시간 + 청소시간 30분
+            LocalDateTime reservedEndWithCleanup = reservedStart.plusMinutes((long) (reservation.getTimeUnit() * TIME_UNIT) + 30);
+
+            // checkTime이 기존 예약 시간(청소시간 포함) 내에 있는지 확인
+            // (reservedStart <= checkTime < reservedEndWithCleanup)
+            if (!checkTime.isBefore(reservedStart) && checkTime.isBefore(reservedEndWithCleanup)) {
+                return true; // 중복 발생
+            }
+        }
+        return false; // 중복 없음
     }
 }
