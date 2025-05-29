@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ReviewListResponse {
     private Integer reviewId;
+    private Integer reservationId;
     private Integer star;
     private String title;
     private Integer viewCount;
