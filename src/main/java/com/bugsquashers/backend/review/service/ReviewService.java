@@ -62,6 +62,7 @@ public class ReviewService {
     // 상영관 클릭 시 해당 화면에 나타날 리뷰 목록 정보
     private ReviewListResponse toTDto(Review review) {
         ReviewListResponse reviewListResponse = new ReviewListResponse();
+        reviewListResponse.setReviewId(review.getReviewId());
         reviewListResponse.setStar(review.getStar());
         reviewListResponse.setTitle(review.getTitle());
         reviewListResponse.setRegDate(review.getRegDate());

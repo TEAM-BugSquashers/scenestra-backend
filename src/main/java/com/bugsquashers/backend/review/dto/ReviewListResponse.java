@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewListResponse {
+    private Integer reviewId;
     private Integer star;
     private String title;
     private Integer viewCount;
