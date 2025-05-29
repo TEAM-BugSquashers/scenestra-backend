@@ -33,12 +33,27 @@ public class ReviewService {
         reviewResponse.setContent(review.getContent());
         reviewResponse.setStar(review.getStar());
         reviewResponse.setTitle(review.getTitle());
+        reviewResponse.setRegDate(review.getRegDate());
+        reviewResponse.setViewCount(review.getViewCount());
         reviewResponse.setReservationId(review.getReservation() != null ? review.getReservation().getReservationId() : null);
+
         List<ReviewImage> images = reviewImageRepository.findByReview(review);
         List<String> imageUrls = images.stream()
                 .map(ReviewImage::getImageUrl)
                 .collect(Collectors.toList());
         reviewResponse.setImageUrls(imageUrls);
+
+        String username = null;
+        if (review.getUser() != null) {
+            username = review.getUser().getUsername();
+        } else if (
+                review.getReservation() != null &&
+                review.getReservation().getUser() != null
+        ) {
+            username = review.getReservation().getUser().getUsername();
+        }
+        reviewResponse.setUsername(username);
+
         return reviewResponse;
     }
 
