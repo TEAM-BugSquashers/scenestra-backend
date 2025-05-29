@@ -17,4 +17,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     // 유저 기준 가장 최근 예약 조회
     @Query("SELECT res FROM Reservation res WHERE res.user = :user ORDER BY res.regDate DESC")
     Optional<Reservation> findTop1ByUserOrderByRegDateDesc(User user);
+
+    // 이미 해당 예약에 리뷰가 있는지 확인
+    boolean existsByReservation(Reservation reservation);
 }

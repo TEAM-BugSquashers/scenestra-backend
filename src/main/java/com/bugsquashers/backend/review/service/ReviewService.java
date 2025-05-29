@@ -68,6 +68,11 @@ public class ReviewService {
                 .findTop1ByUserOrderByRegDateDesc(user)
                 .orElseThrow(() -> new RuntimeException("최근 예약 내역이 없습니다."));
 
+        // 이미 해당 예약에 리뷰가 있는지 확인
+        if (reviewRepository.existsByReservation(reservation)) {
+            throw new IllegalStateException("리뷰는 예약 당 하나만 작성 가능합니다.");
+        }
+
         Review review = new Review();
         review.setContent(reviewRequest.getContent());
         review.setStar(reviewRequest.getStar());
