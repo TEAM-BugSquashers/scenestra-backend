@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Getter
@@ -59,6 +60,7 @@ public class JwtGenerator {
                 .header()
                 .type("JWT")
                 .and()
+                .id(UUID.randomUUID().toString()) // 고유 ID 추가
                 .subject(user.getUsername())
                 .claims(createClaims(user))
                 .expiration(new Date(now + RefreshTokenExpTime))

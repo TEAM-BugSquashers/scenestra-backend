@@ -68,22 +68,46 @@ public class ReservationService {
      */
     @Transactional(readOnly = true)
     public GetAvailableTimesInDayResponse getAvailableTimesInDayWithDetails(int theaterId, String movieId, LocalDate date) {
+        // 내일 이후 날짜만 && 한달까지만 예약 가능
+        validateBookingDate(date);
+
         // 필요한 객체들을 미리 조회
         Movie movie = movieService.getMovieByMovieId(movieId);
         Theater theater = theaterService.getTheaterById(theaterId);
 
-        // 공통 로직 호출
-        List<LocalDateTime> availableTimes = getAvailableTimesInDayInternal(theater, movie, date);
-        int timeUnit = timeSlotCalculationService.calculateRequiredTimeUnits(movie);
+        // 영화의 상영 시간 단위 계산
+        int requiredTimeUnits = timeSlotCalculationService.calculateRequiredTimeUnits(movie);
+
+        // 예약 가능한 모든 경우의 수 시간 슬롯 생성(운영시간 내 상영가능 여부 미판단)
+        List<LocalDateTime> availableAllSlots = timeSlotCalculationService.generateAllTimeSlots(date);
+        List<LocalDateTime> availableSlots = timeSlotCalculationService.generateAvailableTimeSlots(date, requiredTimeUnits);
+
+        // 상영관의 해당일 예약 목록을 조회함
+        List<Reservation> reservations = getReservationsForDate(theater, date);
+
+        // 기본 필터링함
+        List<LocalDateTime> filterTime = timeSlotCalculationService.filterAvailableSlots(availableSlots, reservations, requiredTimeUnits);
+
+        Map<LocalDateTime, String> result = new LinkedHashMap<>();
+
+        //예약 가능한시간:1, 비어있으나 예약시간이 충분하지 않음:2, 예약된 시간: 3,
+        for (LocalDateTime slot : availableAllSlots) {
+            if (timeSlotCalculationService.timeSlotOverlapping(slot, reservations)) {
+                result.put(slot, "BOOKED");
+            } else if (filterTime.contains(slot)) {
+                result.put(slot, "AVAILABLE");
+            } else {
+                result.put(slot, "BLOCKED");
+            }
+        }
 
         // DTO 생성 및 반환
         GetAvailableTimesInDayResponse response = new GetAvailableTimesInDayResponse();
-        response.setTimeUnit(timeUnit);
+        response.setTimeUnit(requiredTimeUnits + 1); // +1은 청소시간 30분을 포함하기 위함
         response.setMovieName(movie.getTitle());
         response.setTheaterName(theater.getName());
-        response.setAvailableTimes(availableTimes);
-        response.setTotalPrice(getTotalPrice(theater, timeUnit));
-
+        response.setAvailableTimes(result);
+        response.setTotalPrice(getTotalPrice(theater, requiredTimeUnits));
         return response;
     }
 
