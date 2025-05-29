@@ -1,5 +1,6 @@
 package com.bugsquashers.backend.review;
 
+import com.bugsquashers.backend.review.dto.ReviewListResponse;
 import com.bugsquashers.backend.review.dto.ReviewRequest;
 import com.bugsquashers.backend.review.dto.ReviewResponse;
 import com.bugsquashers.backend.review.service.ReviewService;
@@ -42,7 +43,7 @@ public class ReviewController {
     // 상영관 별 리뷰 목록
     @GetMapping("/theater/{theaterId}")
     @Operation(summary = "상영관 별 리뷰 목록(theaterId 이용)", description = "상영관 별 리뷰 목록을 조회합니다.")
-    public List<ReviewResponse> getReviewsByTheater(@PathVariable Integer theaterId) {
+    public List<ReviewListResponse> getReviewsByTheater(@PathVariable Integer theaterId) {
         return reviewService.getReviewByTheaterId(theaterId);
     }
 

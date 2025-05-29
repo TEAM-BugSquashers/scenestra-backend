@@ -4,6 +4,7 @@ import com.bugsquashers.backend.image.ImageService;
 import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.review.domain.Review;
 import com.bugsquashers.backend.review.domain.ReviewImage;
+import com.bugsquashers.backend.review.dto.ReviewListResponse;
 import com.bugsquashers.backend.review.dto.ReviewRequest;
 import com.bugsquashers.backend.review.dto.ReviewResponse;
 import com.bugsquashers.backend.review.repository.ReviewImageRepository;
@@ -28,6 +29,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ImageService imageService;
 
+    // 리뷰를 클릭 했을 때 해당 화면에 들어갈 정보
     private ReviewResponse toDto(Review review) {
         ReviewResponse reviewResponse = new ReviewResponse();
         reviewResponse.setContent(review.getContent());
@@ -55,6 +57,28 @@ public class ReviewService {
         reviewResponse.setUsername(username);
 
         return reviewResponse;
+    }
+
+    // 상영관 클릭 시 해당 화면에 나타날 리뷰 목록 정보
+    private ReviewListResponse toTDto(Review review) {
+        ReviewListResponse reviewListResponse = new ReviewListResponse();
+        reviewListResponse.setStar(review.getStar());
+        reviewListResponse.setTitle(review.getTitle());
+        reviewListResponse.setRegDate(review.getRegDate());
+        reviewListResponse.setViewCount(review.getViewCount());
+
+        String username = null;
+        if (review.getUser() != null) {
+            username = review.getUser().getUsername();
+        } else if (
+                review.getReservation() != null &&
+                review.getReservation().getUser() != null
+        ) {
+            username = review.getReservation().getUser().getUsername();
+        }
+        reviewListResponse.setUsername(username);
+
+        return reviewListResponse;
     }
 
     // 글 쓰기
@@ -120,10 +144,10 @@ public class ReviewService {
 
     // 상영관 별 리뷰 목록
     @Transactional
-    public List<ReviewResponse> getReviewByTheaterId(Integer theaterId) {
+    public List<ReviewListResponse> getReviewByTheaterId(Integer theaterId) {
         List<Review> reviews = reviewRepository.findByReservation_Theater_TheaterId(theaterId);
         return reviews.stream()
-                .map(this::toDto)
+                .map(this::toTDto)
                 .collect(Collectors.toList());
     }
 
