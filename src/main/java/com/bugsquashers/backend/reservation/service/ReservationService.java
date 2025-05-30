@@ -7,6 +7,8 @@ import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.reservation.domain.ReservationStatus;
 import com.bugsquashers.backend.reservation.dto.GetAvailableTimesInDayResponse;
 import com.bugsquashers.backend.reservation.dto.ReservationDetailsResponse;
+import com.bugsquashers.backend.review.domain.Review;
+import com.bugsquashers.backend.review.repository.ReviewRepository;
 import com.bugsquashers.backend.theater.TheaterService;
 import com.bugsquashers.backend.theater.domain.Theater;
 import com.bugsquashers.backend.user.domain.User;
@@ -31,6 +33,7 @@ public class ReservationService {
     private final TimeSlotCalculationService timeSlotCalculationService;
     private final ReservationRepository reservationRepository;
     private final UserService userService;
+    private final ReviewRepository reviewRepository;
 
     /*
       컨트롤러 대응 메서드
@@ -174,14 +177,17 @@ public class ReservationService {
     public List<ReservationDetailsResponse> getMyReservations(Long userId) {
         User user = userService.getUserById(userId);
         List<Reservation> reservations = reservationRepository.findByUser(user);
-
+        List<Review> reviews = reviewRepository.findByUser(user);
         if (reservations.isEmpty()) {
             throw new EntityNotFoundException("해당 사용자의 예약을 찾을 수 없습니다.");
         }
 
         List<ReservationDetailsResponse> response = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            response.add(new ReservationDetailsResponse(reservation));
+            // 해당 예약에 작성한 리뷰가 있는지 확인
+            boolean isReviewed = reviews.stream()
+                    .anyMatch(review -> review.getReservation().getReservationId().equals(reservation.getReservationId()));
+            response.add(new ReservationDetailsResponse(reservation, isReviewed));
         }
 
         return response;
