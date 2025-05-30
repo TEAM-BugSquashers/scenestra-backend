@@ -149,7 +149,7 @@ public class ReviewService {
     }
 
     // 상세 조회
-    @Transactional(readOnly=true)
+    @Transactional
     public ReviewResponse getReviewById(Integer reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("리뷰 없음"));
         if (review.getReservation() == null || review.getReservation().getTheater() == null) {
@@ -162,7 +162,7 @@ public class ReviewService {
 
 
     // 상영관 별 리뷰 목록
-    @Transactional(readOnly=true)
+    @Transactional
     public List<ReviewListResponse> getReviewByTheaterId(Integer theaterId) {
         List<Review> reviews = reviewRepository.findByReservation_Theater_TheaterId(theaterId);
         return reviews.stream()
