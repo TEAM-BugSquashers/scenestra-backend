@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewRequest {
+    private Integer reservationId;
     private String content;
     private Integer star;
     private String title;
