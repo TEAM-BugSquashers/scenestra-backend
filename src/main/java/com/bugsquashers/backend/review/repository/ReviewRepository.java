@@ -21,5 +21,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     // 이미 해당 예약에 리뷰가 있는지 확인
     boolean existsByReservation(Reservation reservation);
 
-
+    List<Review> findByUser(User user);
 }

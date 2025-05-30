@@ -35,6 +35,9 @@ public class ReservationDetailsResponse {
     private String username;
     private String mobile;
 
+    //리뷰 작성 여부
+    private Boolean isReviewed;
+
     public ReservationDetailsResponse(Reservation reservation) {
 
         this.reservationId = reservation.getReservationId();
@@ -58,5 +61,34 @@ public class ReservationDetailsResponse {
         this.userId = reservation.getUser().getUserId();
         this.username = reservation.getUser().getRealName();
         this.mobile = reservation.getUser().getMobile();
+
+        this.isReviewed = null;
+    }
+
+    public ReservationDetailsResponse(Reservation reservation, boolean isReviewed) {
+
+        this.reservationId = reservation.getReservationId();
+        this.date = reservation.getStartDateTime().toLocalDate();
+        this.startTime = reservation.getStartDateTime().toLocalTime();
+        // endTime = startTime + (timeUnit * 30분)
+        this.endTime = reservation.getStartDateTime().toLocalTime().plusMinutes(reservation.getTimeUnit() * 30L);
+        this.timeUnit = reservation.getTimeUnit();
+        this.numPeople = reservation.getNumPeople();
+        this.regDate = reservation.getRegDate();
+        this.status = reservation.getStatus();
+        this.statusString = reservation.getStatus().getDescription();
+        this.totalPrice = reservation.getTotalPrice();
+
+        this.movieId = reservation.getMovie().getMovieId();
+        this.movieTitle = reservation.getMovie().getTitle();
+
+        this.theaterId = reservation.getTheater().getTheaterId();
+        this.theaterName = reservation.getTheater().getName();
+
+        this.userId = reservation.getUser().getUserId();
+        this.username = reservation.getUser().getRealName();
+        this.mobile = reservation.getUser().getMobile();
+
+        this.isReviewed = isReviewed;
     }
 } 

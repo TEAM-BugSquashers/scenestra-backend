@@ -117,6 +117,7 @@ public class ReviewService {
         review.setRegDate(LocalDateTime.now());
         review.setViewCount(0);
         review.setReservation(reservation);
+        review.setUser(user);
 
         reviewRepository.save(review);
 
@@ -140,6 +141,11 @@ public class ReviewService {
     public List<ReviewResponse> getAllReview() {
         List<Review> reviews = reviewRepository.findAll();
         return reviews.stream().map(this::toDto).toList();
+    }
+
+    public List<Review> getAllReviewByUser(User user) {
+        List<Review> reviews = reviewRepository.findByUser(user);
+        return reviews;
     }
 
     // 상세 조회
