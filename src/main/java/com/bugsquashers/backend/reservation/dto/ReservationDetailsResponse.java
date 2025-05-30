@@ -56,7 +56,7 @@ public class ReservationDetailsResponse {
         this.theaterName = reservation.getTheater().getName();
 
         this.userId = reservation.getUser().getUserId();
-        this.username = reservation.getUser().getUsername();
+        this.username = reservation.getUser().getRealName();
         this.mobile = reservation.getUser().getMobile();
     }
 } 
