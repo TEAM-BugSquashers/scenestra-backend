@@ -63,7 +63,7 @@ public class UserService {
 
     public void validateDuplicateUsername(String username) {
         if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("이미 가입된 계정명 입니다.");
+            throw new IllegalArgumentException("이미 가입된 아이디 입니다.");
         }
     }
 
