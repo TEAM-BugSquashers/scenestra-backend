@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserPreferredGenreResponse> findPreferredGenresByUserId(Long userId);
 
     boolean existsByMobile(String mobile);
+
+    //
+    Optional<User> findByEmail(String email);
 }

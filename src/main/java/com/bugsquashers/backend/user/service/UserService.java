@@ -162,4 +162,12 @@ public class UserService {
 
         updatePassword(user, reqDto.getNewPassword());
     }
+
+    //
+    @Transactional(readOnly = true)
+    public String getUsernameByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(User::getUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+    }
 }

@@ -74,4 +74,11 @@ public class UserController {
         userService.updatePassword(principal.getUserId(), reqDto);
         return ApiResponse.onSuccess(SuccessStatus.OK, "비밀번호가 수정되었습니다.");
     }
+
+    //
+    @GetMapping("/find/")
+    @Operation(summary = "아이디 찾기", description = "유저 아이디를 찾습니다.")
+    public ResponseEntity<ApiResponse<Object>> fetchUsernameByEmail(@RequestParam @Valid String email) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, userService.getUsernameByEmail(email));
+    }
 }
