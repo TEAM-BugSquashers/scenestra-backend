@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ReviewImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer reservationId;
+    private Integer imageId;
 
     private String imageUrl;
 
