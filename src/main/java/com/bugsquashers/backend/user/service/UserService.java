@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -165,9 +166,43 @@ public class UserService {
 
     //
     @Transactional(readOnly = true)
-    public String getUsernameByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .map(User::getUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
+    public Optional<String> getUsernameByEmail(String email, String name) {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        Optional<User> byName = userRepository.findByRealName(name);
+
+        if (byEmail.isEmpty() && byName.isEmpty()) {
+            throw new UsernameNotFoundException("유저를 찾을 수 없습니다.");
+        }
+
+        Optional<User> exactMatch = userRepository.findByEmailAndRealName(email, name);
+        if (exactMatch.isEmpty()) {
+            throw new UsernameNotFoundException ("입력한 정보가 일치하지 않습니다.");
+        }
+
+        return Optional.of(exactMatch.get().getUsername());
+    }
+
+    @Transactional(readOnly = true)
+    public String sendPassword(String username, String name) {
+        Optional<User> byUsername = userRepository.findByUsername(username);
+        Optional<User> byName = userRepository.findByRealName(name);
+
+        if (byUsername.isEmpty() && byName.isEmpty()) {
+            throw new UsernameNotFoundException("유저를 찾을 수 없습니다.");
+        }
+
+        Optional<User> exactMatch = userRepository.findByUsernameAndRealName(username, name);
+        if (exactMatch.isEmpty()) {
+            throw new UsernameNotFoundException ("입력한 정보가 일치하지 않습니다.");
+        }
+
+        return "회원님의 이메일로 임시 비밀번호를 전송했습니다.";
+
+/*        if (!userRepository.existsByUsername(username)) {
+            throw new UsernameNotFoundException("가입된 회원이 아닙니다.");
+        } else {
+            return "회원님의 이메일로 임시 비밀번호를 전송했습니다.";
+
+        }*/
     }
 }

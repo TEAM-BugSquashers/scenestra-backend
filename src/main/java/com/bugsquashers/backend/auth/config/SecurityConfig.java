@@ -43,10 +43,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/users/join").permitAll()
                         .requestMatchers("/api/users/check-username").permitAll()
+                        .requestMatchers("/api/users/findPw").permitAll()
+                        .requestMatchers("/api/users/findId").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/movies/genres").permitAll()
                         .requestMatchers("/api/logout").permitAll()
-                        .requestMatchers("/api/users/find").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()

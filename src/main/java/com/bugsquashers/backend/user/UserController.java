@@ -76,9 +76,18 @@ public class UserController {
     }
 
     //
-    @GetMapping("/find/")
+    @GetMapping("/findId")
     @Operation(summary = "아이디 찾기", description = "유저 아이디를 찾습니다.")
-    public ResponseEntity<ApiResponse<Object>> fetchUsernameByEmail(@RequestParam @Valid String email) {
-        return ApiResponse.onSuccess(SuccessStatus.OK, userService.getUsernameByEmail(email));
+    public ResponseEntity<ApiResponse<Object>> fetchUsernameByEmail(@RequestParam String email,
+                                                                    @RequestParam String name) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, userService.getUsernameByEmail(email, name));
+    }
+
+    @GetMapping("/findPw")
+    @Operation(summary = "비밀번호 찾기", description = "유저 비밀번호를 찹습니다.")
+    public ResponseEntity<ApiResponse<Object>> checkUsername(@RequestParam String username,
+                                                             @RequestParam String name) {
+        return ApiResponse.onSuccess(SuccessStatus.OK, userService.sendPassword(username, name));
+//        return ApiResponse.onSuccess(SuccessStatus.OK, "회원님의 이메일로 임시 비밀번호를 전송했습니다.");
     }
 }
