@@ -19,7 +19,7 @@ public class AdminController {
     @GetMapping("/users")
     @Operation(summary = "모든 사용자 조회", description = "모든 사용자의 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<Object>> allUsers() {
-        return ApiResponse.onSuccess(SuccessStatus.OK, "");
+        return ApiResponse.onSuccess(SuccessStatus.OK, adminService.getAllUsers());
     }
 
     @GetMapping("/reservations")
