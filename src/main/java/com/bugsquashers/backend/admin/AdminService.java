@@ -4,6 +4,9 @@ import com.bugsquashers.backend.reservation.ReservationRepository;
 import com.bugsquashers.backend.reservation.domain.Reservation;
 import com.bugsquashers.backend.reservation.dto.ReservationDetailsResponse;
 import com.bugsquashers.backend.review.repository.ReviewRepository;
+import com.bugsquashers.backend.user.domain.User;
+import com.bugsquashers.backend.user.dto.UserInfoResponse;
+import com.bugsquashers.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.List;
 public class AdminService {
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
     /**
      * 전체 예약 목록 조회
@@ -41,5 +45,20 @@ public class AdminService {
 
         boolean isReviewed = reviewRepository.existsByReservation(reservation);
         return new ReservationDetailsResponse(reservation, isReviewed);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserInfoResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    UserInfoResponse response = new UserInfoResponse();
+                    response.setUserId(user.getUserId());
+                    response.setUsername(user.getUsername());
+                    response.setRealName(user.getRealName());
+                    response.setEmail(user.getEmail());
+
+                    return response;
+                })
+                .toList();
     }
 }
