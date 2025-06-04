@@ -33,7 +33,7 @@ public class MovieController {
     }
 
     // 영화 상세 정보
-    @Operation(summary = "영화 상세 정보", description = "movieId를 이용해 해당 영화의 정보를 조회합니다.")
+    @Operation(summary = "영화 상세 조회", description = "movieId를 이용해 해당 영화의 정보를 조회합니다.")
     @GetMapping("/{movieId}")
     public ResponseEntity<ApiResponse<Object>> getMovie(@PathVariable String movieId) {
 
@@ -57,7 +57,7 @@ public class MovieController {
 
     // 장르 id 으로 영화 조회 - 해당 장르의 영화 전체
     @GetMapping("/genres/{genreId}")
-    @Operation(summary = "장르별 전체 영화 조회", description = "장르별 전체 영화를 조회합니다.")
+    @Operation(summary = "해당 장르에 대한 전체 영화 조회", description = "해당 장르에 대한 전체 영화를 조회합니다.")
     public ResponseEntity<ApiResponse<Object>> moviesByGenreName(@PathVariable int genreId) {
         List<GenreMoviesDto> DTOs = movieService.getMovieByGenreId(genreId);
         return ApiResponse.onSuccess(SuccessStatus.OK, DTOs);
@@ -65,7 +65,7 @@ public class MovieController {
 
     // New
     @GetMapping("/new")
-    @Operation(summary = "새로운 영화 조회", description = "최신 영화를 조회합니다.(20개)")
+    @Operation(summary = "최신 영화 조회", description = "최신 영화를 조회합니다.(20개)")
     public ResponseEntity<ApiResponse<Object>> newestMovies() {
         List<?> newMovie = movieService.getLatestMoviesDto(20);
         return ApiResponse.onSuccess(SuccessStatus.OK, newMovie);
@@ -73,7 +73,7 @@ public class MovieController {
 
     //Best
     @GetMapping("/best")
-    @Operation(summary = "인기 영화 조회", description = "인기 영화를 조회합니다.(20개)")
+    @Operation(summary = "인기(누적관객수) 영화 조회", description = "인기 영화(누적관객수)를 조회합니다.(20개)")
     public ResponseEntity<ApiResponse<Object>> popularMovies() {
         List<MovieDto> bestMovie = movieService.getMostPopularMoviesDto(20);
         return ApiResponse.onSuccess(SuccessStatus.OK, bestMovie);
