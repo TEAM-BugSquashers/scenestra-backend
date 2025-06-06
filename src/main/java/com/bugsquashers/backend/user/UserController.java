@@ -88,6 +88,5 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> checkUsername(@RequestParam String username,
                                                              @RequestParam String name) {
         return ApiResponse.onSuccess(SuccessStatus.OK, userService.sendPassword(username, name));
-//        return ApiResponse.onSuccess(SuccessStatus.OK, "회원님의 이메일로 임시 비밀번호를 전송했습니다.");
     }
 }

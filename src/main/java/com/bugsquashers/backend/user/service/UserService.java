@@ -167,10 +167,10 @@ public class UserService {
     //
     @Transactional(readOnly = true)
     public Optional<String> getUsernameByEmail(String email, String name) {
-        Optional<User> byEmail = userRepository.findByEmail(email);
-        Optional<User> byName = userRepository.findByRealName(name);
+        boolean byEmail = userRepository.existsByEmail(email);
+        boolean byName = userRepository.existsByRealName(name);
 
-        if (byEmail.isEmpty() && byName.isEmpty()) {
+        if (!byEmail && !byName) {
             throw new UsernameNotFoundException("유저를 찾을 수 없습니다.");
         }
 
@@ -184,10 +184,10 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public String sendPassword(String username, String name) {
-        Optional<User> byUsername = userRepository.findByUsername(username);
-        Optional<User> byName = userRepository.findByRealName(name);
+        boolean byUsername = userRepository.existsByUsername(username);
+        boolean byName = userRepository.existsByRealName(name);
 
-        if (byUsername.isEmpty() && byName.isEmpty()) {
+        if (!byUsername && !byName) {
             throw new UsernameNotFoundException("유저를 찾을 수 없습니다.");
         }
 
@@ -197,12 +197,5 @@ public class UserService {
         }
 
         return "회원님의 이메일로 임시 비밀번호를 전송했습니다.";
-
-/*        if (!userRepository.existsByUsername(username)) {
-            throw new UsernameNotFoundException("가입된 회원이 아닙니다.");
-        } else {
-            return "회원님의 이메일로 임시 비밀번호를 전송했습니다.";
-
-        }*/
     }
 }
